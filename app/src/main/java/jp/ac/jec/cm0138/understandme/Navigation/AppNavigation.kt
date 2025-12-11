@@ -2,20 +2,21 @@ package jp.ac.jec.cm0138.understandme.Navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
 
 @Composable
 fun AppNavigation(
+    navController: NavHostController,
     paddingValues: PaddingValues,
     isLogIn: Boolean,
     onShowSnackbar: (message: String) -> Unit
 ) {
-    val navController = rememberNavController()
-
 
     LaunchedEffect(isLogIn) {
         if(isLogIn) {
@@ -40,5 +41,17 @@ fun AppNavigation(
             modifier = Modifier.padding(paddingValues)
         )
         homeNav(navController = navController, modifier = Modifier.padding(paddingValues))
+
+        composable<CLASSES_ROUTE> { entry ->
+            Text("Classes Screen")
+        }
+
+        composable<HOMEWORKS_ROUTE> { entry ->
+            Text("Homeworks Screen")
+        }
+
+        composable<PROFILE_ROUTE> { entry ->
+            Text("Profile Screen")
+        }
     }
 }
