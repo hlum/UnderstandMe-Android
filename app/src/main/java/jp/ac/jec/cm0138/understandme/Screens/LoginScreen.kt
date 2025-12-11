@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import jp.ac.jec.cm0138.understandme.Navigation.HOME_ROUTE
 import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthenticationiRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.AuthResult
@@ -62,6 +63,7 @@ fun LoginScreen(
 
             AuthState.Success -> {
                 onShowSnackbar("サインインに成功しました。")
+                navController.navigate(HOME_ROUTE)
             }
 
             AuthState.Cancelled -> {

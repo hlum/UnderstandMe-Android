@@ -1,6 +1,8 @@
 package jp.ac.jec.cm0138.understandme.di
 
 import android.content.Context
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
