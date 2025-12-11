@@ -9,10 +9,10 @@ import androidx.credentials.GetCredentialResponse
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 
-class GoogleAuthHelper(private val context: Context) {
+class GoogleAuthHelper() {
     val TAG = "GoogleAuthHelper"
 
-    suspend fun getGoogleIdTokenCredential(): GoogleIdTokenCredential? {
+    suspend fun getGoogleIdTokenCredential(context: Context): GoogleIdTokenCredential? {
         try {
             val googleIDOption: GetGoogleIdOption =
                 createGoogleIDOption(serverClientID = "660534500337-7m8qrrqn7ngpi3hsuen5ptf7ll8n289p.apps.googleusercontent.com")

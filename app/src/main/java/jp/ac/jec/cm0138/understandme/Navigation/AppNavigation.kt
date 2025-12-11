@@ -8,14 +8,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AppNavigation(paddingValues: PaddingValues) {
+fun AppNavigation(
+    paddingValues: PaddingValues,
+    onShowSnackbar: (message: String) -> Unit
+) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
         startDestination = LOGIN_ROUTE,
     ) {
-        loginNav(navController = navController, modifier = Modifier.padding(paddingValues))
+        loginNav(
+            onShowSnackbar = onShowSnackbar,
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
         homeNav(navController = navController, modifier = Modifier.padding(paddingValues))
     }
 }

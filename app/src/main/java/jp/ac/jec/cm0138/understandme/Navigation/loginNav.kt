@@ -6,8 +6,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import jp.ac.jec.cm0138.understandme.Screens.LoginScreen
 
-fun NavGraphBuilder.loginNav(navController: NavController, modifier: Modifier = Modifier) {
+fun NavGraphBuilder.loginNav(
+    navController: NavController,
+    onShowSnackbar: (message: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     composable<LOGIN_ROUTE> {
-        LoginScreen(modifier = modifier)
+        LoginScreen(
+            modifier = modifier,
+            navController = navController,
+            onShowSnackbar = onShowSnackbar
+        )
     }
 }

@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.firebase.services)
+
+    alias(libs.plugins.hilt.android)
     alias(libs.plugins.kapt)
 }
 
@@ -40,6 +42,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
@@ -67,7 +73,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // HILT
-    implementation(libs.hilt)
+    implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 }
