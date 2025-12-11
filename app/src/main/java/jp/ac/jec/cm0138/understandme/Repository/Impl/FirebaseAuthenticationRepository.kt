@@ -1,0 +1,47 @@
+package jp.ac.jec.cm0138.understandme.Repository.Impl
+
+import android.content.Context
+import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.auth
+import jp.ac.jec.cm0138.understandme.Helper.GoogleAuthHelper
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthenticationiRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+
+sealed class AuthResult {
+    object Success : AuthResult()
+    object Failed: AuthResult()
+    object Cancelled : AuthResult()
+}
+
+
+class FirebaseAuthenticationRepository(): AuthenticationiRepository {
+    private val TAG = "FirebaseAuthentication"
+    private val auth = Firebase.auth
+    private val googleAuthHelper = GoogleAuthHelper()
+
+    override suspend fun signInWithGoogle(context: Context): AuthResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val googleIdTokenCredential =
+                    googleAuthHelper.getGoogleIdTokenCredential(context = context)
+                        ?: return@withContext AuthResult.Cancelled
+
+                // Google SignIn Sheetからuserがバックボタンを押した場合
+
+
+                val credential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                auth.signInWithCredential(credential).await()
+
+                return@withContext AuthResult.Success
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Google SignInに失敗しました。原因：${e}")
+                return@withContext AuthResult.Failed
+            }
+        }
+    }
+}
