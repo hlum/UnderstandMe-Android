@@ -1,11 +1,5 @@
 package jp.ac.jec.cm0138.understandme.Navigation
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Class
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.ui.graphics.vector.ImageVector
+import jp.ac.jec.cm0138.understandme.R
 import kotlinx.serialization.Serializable
 
 
@@ -26,7 +20,7 @@ data object PROFILE_ROUTE
 
 data class BottomNavItem(
     val route: String,
-    val icon: ImageVector,
+    val icon: Int,   // Drawable resource ID
     val label: String
 )
 
@@ -34,22 +28,22 @@ data class BottomNavItem(
 val bottomNavItems = listOf(
     BottomNavItem(
         route = HOME_ROUTE::class.qualifiedName!!,
-        icon = Icons.Filled.Home,
+        icon = R.drawable.house_fill,  // built-in vector
         label = "ホーム"
     ),
     BottomNavItem(
         route = CLASSES_ROUTE::class.qualifiedName!!,
-        icon = Icons.Filled.Class,
+        icon = R.drawable.graduationcap_fill,  // your SVG
         label = "科目一覧"
     ),
     BottomNavItem(
         route = HOMEWORKS_ROUTE::class.qualifiedName!!,
-        icon = Icons.Filled.Book,
+        icon = R.drawable.list_bullet_clipboard_fill,
         label = "課題一覧"
     ),
     BottomNavItem(
         route = PROFILE_ROUTE::class.qualifiedName!!,
-        icon = Icons.Filled.Person,
+        icon = R.drawable.person_fill,
         label = "プロフィール"
     )
 )

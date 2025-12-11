@@ -5,47 +5,33 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Class
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import androidx.navigation.Navigation
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import jp.ac.jec.cm0138.understandme.Navigation.AppNavigation
-import jp.ac.jec.cm0138.understandme.Navigation.CLASSES_ROUTE
-import jp.ac.jec.cm0138.understandme.Navigation.HOMEWORKS_ROUTE
-import jp.ac.jec.cm0138.understandme.Navigation.HOME_ROUTE
 import jp.ac.jec.cm0138.understandme.Navigation.LOGIN_ROUTE
-import jp.ac.jec.cm0138.understandme.Navigation.PROFILE_ROUTE
 import jp.ac.jec.cm0138.understandme.Navigation.bottomNavItems
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,7 +94,7 @@ class MainActivity : ComponentActivity() {
                                             onClick = { navController.navigate(item.route) },
                                             icon = {
                                                 Icon(
-                                                    imageVector = item.icon,
+                                                    imageVector =  ImageVector.vectorResource(id = item.icon),
                                                     contentDescription = item.label,
                                                     modifier = Modifier.size(30.dp)
                                                 )
