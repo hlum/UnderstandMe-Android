@@ -1,4 +1,4 @@
-package jp.ac.jec.cm0138.understandme.Navigation
+package jp.ac.jec.cm0138.understandme.Presentation.Navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 
 @Composable
 fun AppNavigation(
@@ -35,12 +36,20 @@ fun AppNavigation(
         navController = navController,
         startDestination = if(isLogIn) HOME_ROUTE else LOGIN_ROUTE,
     ) {
+
         loginNav(
             onShowSnackbar = onShowSnackbar,
             navController = navController,
             modifier = Modifier.padding(paddingValues)
         )
-        homeNav(navController = navController, modifier = Modifier.padding(paddingValues))
+
+        composable<HOME_ROUTE> { entry ->
+            HomeScreen(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+
 
         composable<CLASSES_ROUTE> { entry ->
             Text("Classes Screen")

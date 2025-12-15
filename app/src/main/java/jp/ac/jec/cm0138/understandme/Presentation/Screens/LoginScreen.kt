@@ -1,4 +1,4 @@
-package jp.ac.jec.cm0138.understandme.Screens
+package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -33,12 +33,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import jp.ac.jec.cm0138.understandme.Navigation.HOME_ROUTE
+import com.google.firebase.auth.FirebaseUser
+import jp.ac.jec.cm0138.understandme.Entity.UserData
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOME_ROUTE
 import jp.ac.jec.cm0138.understandme.R
-import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthenticationiRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.AuthResult
-import jp.ac.jec.cm0138.understandme.ViewModels.AuthState
-import jp.ac.jec.cm0138.understandme.ViewModels.LoginScreenViewModel
+import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AuthState
+import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.LoginScreenViewModel
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
+import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
 
@@ -131,9 +135,27 @@ fun LoginScreen(
 }
 
 
-class PreviewAuthRepository() : AuthenticationiRepository {
+class PreviewAuthRepository() : AuthRepository {
     override suspend fun signInWithGoogle(context: Context): AuthResult {
         return AuthResult.Success
+    }
+
+    override fun getCurrentUser(): FirebaseUser {
+        TODO("Not yet implemented")
+    }
+}
+
+class PreviewUserDataRepository(): UserDataRepository {
+    override suspend fun saveUserData(userData: UserData) {
+        return
+    }
+
+    override suspend fun fetchUserData(userID: String): UserData {
+        return UserData.getDummy()
+    }
+
+    override suspend fun updateFCMToken(userID: String, fcmToken: String) {
+        return
     }
 }
 
@@ -145,7 +167,10 @@ fun LoginScreenPreview() {
     Scaffold { innerpadding ->
         LoginScreen(
             modifier = Modifier.padding(innerpadding),
-            viewModel = LoginScreenViewModel(authenticationRepository = PreviewAuthRepository()),
+            viewModel = LoginScreenViewModel(
+                authenticationRepository = PreviewAuthRepository(),
+                userDataUseCase = UserDataUseCase(userDataRepository = PreviewUserDataRepository())
+            ),
             onShowSnackbar = { message -> },
             navController = navController
         )

@@ -1,4 +1,4 @@
-package jp.ac.jec.cm0138.understandme.Navigation
+package jp.ac.jec.cm0138.understandme.Presentation.Navigation
 import jp.ac.jec.cm0138.understandme.R
 import kotlinx.serialization.Serializable
 

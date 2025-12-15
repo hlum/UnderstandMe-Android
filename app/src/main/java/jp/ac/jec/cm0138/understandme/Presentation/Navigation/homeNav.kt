@@ -1,4 +1,4 @@
-package jp.ac.jec.cm0138.understandme.Navigation
+package jp.ac.jec.cm0138.understandme.Presentation.Navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button

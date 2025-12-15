@@ -7,11 +7,17 @@ plugins {
 
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.secrets.gradle.plugin)
 }
 
 android {
     namespace = "jp.ac.jec.cm0138.understandme"
     compileSdk = 36
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "jp.ac.jec.cm0138.understandme"
@@ -45,6 +51,11 @@ android {
 
     hilt {
         enableAggregatingTask = false
+    }
+
+
+    secrets {
+        defaultPropertiesFileName = "secrets.properties"
     }
 }
 
@@ -82,4 +93,21 @@ dependencies {
     implementation("androidx.compose.material:material:1.10.0")
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
+
+
+    //okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // kotlinx
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // secrets
+    implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+
 }

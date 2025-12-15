@@ -30,9 +30,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import jp.ac.jec.cm0138.understandme.Navigation.AppNavigation
-import jp.ac.jec.cm0138.understandme.Navigation.LOGIN_ROUTE
-import jp.ac.jec.cm0138.understandme.Navigation.bottomNavItems
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AppNavigation
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.LOGIN_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.bottomNavItems
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
