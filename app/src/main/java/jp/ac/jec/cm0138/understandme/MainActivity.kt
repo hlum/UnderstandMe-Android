@@ -83,7 +83,6 @@ class MainActivity : ComponentActivity() {
                             navController.currentBackStackEntryAsState().value?.destination?.route
 
                         if (currentRoute != LOGIN_ROUTE::class.qualifiedName) {
-                            NavigationBar {
                                 NavigationBar {
 
                                     bottomNavItems.forEach { item ->
@@ -117,8 +116,6 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-
-                            }
                         }
                     },
                     modifier = Modifier.fillMaxSize()
