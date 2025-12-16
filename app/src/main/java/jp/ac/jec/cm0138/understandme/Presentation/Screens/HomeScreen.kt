@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,16 +55,20 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
+import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestUserDataRepository
+import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
+import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
 import java.util.Date
 
 @Composable
@@ -69,6 +77,11 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.loadClassList()
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -81,8 +94,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            ClassListBanner()
-
+            ClassListBanner(classes = viewModel.classList)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,6 +136,7 @@ fun HomeScreen(
 
 @Composable
 fun ClassListBanner(
+    classes: List<Class>,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -146,19 +159,51 @@ fun ClassListBanner(
         )
     }
 
-    LazyRow(
-    ) {
-        items(5) {
-            ClassItemView(
-                classID = "",
-                className = "App Development",
-                teacherName = "先生名",
-                showIcon = false,
-                height = 80.dp,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(5.dp)
+    if(!classes.isEmpty()){
+        LazyRow {
+            items(items = classes) { classItem ->
+                ClassItemView(
+                    classID = classItem.id,
+                    className = classItem.name,
+                    teacherName = classItem.teacherName,
+                    showIcon = false,
+                    height = 80.dp,
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(5.dp)
+                )
+            }
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.LightGray.copy(alpha = 0.15f))
+                .padding(horizontal = 30.dp)
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.MenuBook,
+                contentDescription = null,
+                tint = Color.LightGray,
+                modifier = Modifier.size(48.dp)
             )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = "科目がありません",
+                style = TextStyle(
+                    fontFamily = NotoSansJP,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.LightGray
+            )
+
         }
     }
 }
@@ -234,7 +279,8 @@ fun HomeScreenPreview() {
                 userDataUseCase = UserDataUseCase(
                     userDataRepository = TestUserDataRepository()
                 ),
-                authRepository = TestAuthRepository()
+                authRepository = TestAuthRepository(),
+                classUseCase = ClassUseCase(classRepository = TestClassRepository())
             ),
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )
