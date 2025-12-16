@@ -8,11 +8,14 @@ import jp.ac.jec.cm0138.understandme.BuildConfig
 import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.UserAPIService
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -43,6 +46,15 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideLollipopHomeworkRepository(
+        homeworkAPIService: HomeworkAPIService
+    ): HomeworkRepository {
+        return LollipopHomeworkRepository(homeworkAPIService = homeworkAPIService)
+    }
+
+
+    @Provides
+    @Singleton
     fun provideLollipopClassRepository(
         classAPIService: ClassAPIService
     ): ClassRepository {
@@ -65,6 +77,15 @@ object AppModule {
         retrofit: Retrofit
     ): ClassAPIService {
         return retrofit.create(ClassAPIService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideHomeworkAPIService(
+        retrofit: Retrofit
+    ): HomeworkAPIService {
+        return retrofit.create(HomeworkAPIService::class.java)
     }
 
 

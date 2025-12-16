@@ -51,7 +51,7 @@ data class HomeworkWithStatus(
 
         fun getDummy(
             submissionState: HomeworkState =
-                HomeworkState.entries.randomOrNull() ?: HomeworkState.COMPLETED
+                HomeworkState.entries.randomOrNull() ?: HomeworkState.completed
         ): HomeworkWithStatus {
             return HomeworkWithStatus(
                 id = UUID.randomUUID().toString(),

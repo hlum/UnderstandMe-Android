@@ -5,27 +5,27 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class HomeworkState {
-    NOT_ASSIGNED,
-    GENERATING_QUESTIONS,
-    QUESTION_GENERATED,
-    COMPLETED,
-    FAILED;
+    notAssigned,
+    generatingQuestions,
+    questionGenerated,
+    completed,
+    failed;
 
     val color: Color
         get() = when (this) {
-            NOT_ASSIGNED -> Color.Gray
-            GENERATING_QUESTIONS -> Color.Yellow
-            QUESTION_GENERATED -> Color.Blue
-            COMPLETED -> Color.Green
-            FAILED -> Color.Red
+            notAssigned -> Color.Gray
+            generatingQuestions -> Color.Yellow
+            questionGenerated -> Color.Blue
+            completed -> Color.Green
+            failed -> Color.Red
         }
 
     val stateDescription: String
         get() = when (this) {
-            NOT_ASSIGNED -> "未提出"
-            GENERATING_QUESTIONS -> "問題生成中"
-            QUESTION_GENERATED -> "問題生成完了"
-            COMPLETED -> "提出完了"
-            FAILED -> "生成失敗"
+            notAssigned -> "未提出"
+            generatingQuestions -> "問題生成中"
+            questionGenerated -> "問題生成完了"
+            completed -> "提出完了"
+            failed -> "生成失敗"
         }
 }

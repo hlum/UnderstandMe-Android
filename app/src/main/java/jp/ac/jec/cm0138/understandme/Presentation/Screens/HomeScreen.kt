@@ -2,16 +2,13 @@ package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,21 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.outlined.MenuBook
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -45,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,19 +46,21 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
+import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestUserDataRepository
 import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCase
+import jp.ac.jec.cm0138.understandme.UseCase.HomeworkUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
-import java.util.Date
 
 @Composable
 fun HomeScreen(
@@ -79,7 +70,7 @@ fun HomeScreen(
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.loadClassList()
+        viewModel.loadClassesAndHomeworks()
     }
 
     Scaffold(
@@ -95,44 +86,52 @@ fun HomeScreen(
             modifier = Modifier.padding(it)
         ) {
             ClassListBanner(classes = viewModel.classList)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "提出期限が近い課題",
-                    style = CustomTypography.header
-                )
-
-                Spacer(modifier = Modifier.width(20.dp))
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "",
-                    tint = MyAppTheme.colors.accent.copy(alpha = 0.5f),
-                )
-            }
-
-
-            LazyColumn(
-
-            ) {
-                items(10) {
-                    HomeworkItemView(
-                        id = "",
-                        title = "課題",
-                        dueDate = null,
-                        homeworkState = HomeworkState.QUESTION_GENERATED,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                    )
-                }
-            }
+            HomeworkListBanner(homeworks = viewModel.homeworks)
         }
     }
 }
 
+
+@Composable
+fun HomeworkListBanner(
+    homeworks: List<HomeworkWithStatus>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "提出期限が近い課題",
+            style = CustomTypography.header
+        )
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = "",
+            tint = MyAppTheme.colors.accent.copy(alpha = 0.5f),
+        )
+    }
+
+
+    LazyColumn(
+
+    ) {
+        items(items = homeworks) { homework ->
+            HomeworkItemView(
+                id = homework.id,
+                title = homework.title,
+                dueDate = homework.dueDateString,
+                homeworkState = homework.submissionState,
+                modifier = Modifier.padding(horizontal = 10.dp)
+            )
+        }
+    }
+}
 
 @Composable
 fun ClassListBanner(
@@ -280,7 +279,8 @@ fun HomeScreenPreview() {
                     userDataRepository = TestUserDataRepository()
                 ),
                 authRepository = TestAuthRepository(),
-                classUseCase = ClassUseCase(classRepository = TestClassRepository())
+                classUseCase = ClassUseCase(classRepository = TestClassRepository()),
+                homeworkUseCase = HomeworkUseCase(homeworkRepository = TestHomeworkRepository())
             ),
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )

@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,13 +22,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -41,20 +36,15 @@ import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
-import java.text.SimpleDateFormat
-import java.util.Date
 
 @Composable
 fun HomeworkItemView(
     id: String,
     title: String,
-    dueDate: Date?,
+    dueDate: String?,
     homeworkState: HomeworkState,
     modifier: Modifier = Modifier
 ) {
-
-    val dateFormatter = SimpleDateFormat("yyyy/MM/dd")
-
     Surface(
         onClick = {},
         shape = RoundedCornerShape(20.dp),
@@ -90,7 +80,7 @@ fun HomeworkItemView(
                     )
 
                     val dueDateString: String =
-                        if (dueDate != null) dateFormatter.format(dueDate) + "日まで" else "締切未設定"
+                        if (dueDate != null) dueDate + "日まで" else "締切未設定"
 
                     Text(
                         text = dueDateString,
@@ -119,7 +109,7 @@ fun HomeworkItemView(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .background(
-                            brush = if (homeworkState == HomeworkState.GENERATING_QUESTIONS)
+                            brush = if (homeworkState == HomeworkState.generatingQuestions)
                                 brush
                             else
                                 SolidColor(homeworkState.color.copy(alpha = 0.3f)),
@@ -131,7 +121,7 @@ fun HomeworkItemView(
             }
 
 
-            if(homeworkState == HomeworkState.GENERATING_QUESTIONS) {
+            if(homeworkState == HomeworkState.generatingQuestions) {
                 LottieView(
                     R.raw.ai,
                     modifier = Modifier
@@ -139,7 +129,7 @@ fun HomeworkItemView(
                 )
             }
 
-            if(homeworkState == HomeworkState.QUESTION_GENERATED) {
+            if(homeworkState == HomeworkState.questionGenerated) {
                 Surface() {
                     Text(text = "回答",
                         style = TextStyle(
@@ -182,8 +172,8 @@ fun HomeworkItemPreview() {
         HomeworkItemView(
             id = "",
             title = "課題名",
-            dueDate = Date(),
-            homeworkState = HomeworkState.QUESTION_GENERATED,
+            dueDate = null,
+            homeworkState = HomeworkState.questionGenerated,
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(10.dp)

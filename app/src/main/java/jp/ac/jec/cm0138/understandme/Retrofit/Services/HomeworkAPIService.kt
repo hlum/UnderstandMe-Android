@@ -25,7 +25,7 @@ data class CancelHomeworkRequest(
 )
 
 
-interface HomeworkService {
+interface HomeworkAPIService {
 
     @GET("homework/get_homework_with_status.php")
     suspend fun getHomeworks(

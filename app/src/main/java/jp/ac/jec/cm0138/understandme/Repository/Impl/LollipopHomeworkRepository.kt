@@ -5,17 +5,17 @@ import jp.ac.jec.cm0138.understandme.Entity.APIResponse
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.CancelHomeworkRequest
-import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.RetryJobRequest
 
 
 class LollipopHomeworkRepository @Inject constructor(
-    private val api: HomeworkService
+    private val homeworkAPIService: HomeworkAPIService
 ): HomeworkRepository {
 
     override suspend fun fetchHomeworks(studentID: String): List<HomeworkWithStatus> {
         return fetchHomeworksInternal {
-            api.getHomeworks(studentID)
+            homeworkAPIService.getHomeworks(studentID)
         }
     }
 
@@ -24,7 +24,7 @@ class LollipopHomeworkRepository @Inject constructor(
         studentID: String
     ): List<HomeworkWithStatus> {
         return fetchHomeworksInternal {
-            api.getHomeworksFromClass(classID, studentID)
+            homeworkAPIService.getHomeworksFromClass(classID, studentID)
         }
     }
 
@@ -33,7 +33,7 @@ class LollipopHomeworkRepository @Inject constructor(
         studentID: String
     ): HomeworkWithStatus {
         val list = fetchHomeworksInternal {
-            api.getHomework(id, studentID)
+            homeworkAPIService.getHomework(id, studentID)
         }
 
         return list.firstOrNull()
@@ -57,7 +57,7 @@ class LollipopHomeworkRepository @Inject constructor(
         homeworkID: String,
         studentID: String
     ) {
-        val response = api.retryQuestionGeneration(
+        val response = homeworkAPIService.retryQuestionGeneration(
             RetryJobRequest(
                 homeworkId = homeworkID,
                 userId = studentID
@@ -75,7 +75,7 @@ class LollipopHomeworkRepository @Inject constructor(
         homeworkID: String,
         studentID: String
     ) {
-        val response = api.cancelHomeworkSubmission(
+        val response = homeworkAPIService.cancelHomeworkSubmission(
             CancelHomeworkRequest(
                 userId = studentID,
                 homeworkId = homeworkID
