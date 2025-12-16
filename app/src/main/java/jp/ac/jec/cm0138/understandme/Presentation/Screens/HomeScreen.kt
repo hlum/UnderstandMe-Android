@@ -1,11 +1,67 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeScreenViewModel
+import jp.ac.jec.cm0138.understandme.R
+import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
+import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestUserDataRepository
+import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
+import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
+import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
+import java.util.Date
 
 @Composable
 fun HomeScreen(
@@ -13,6 +69,174 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            HomeScreenTopBarContents(
+                userName = "24cm0138",
+                photoURL = "https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg"
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(it)
+        ) {
+            ClassListBanner()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "提出期限が近い課題",
+                    style = CustomTypography.header
+                )
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "",
+                    tint = MyAppTheme.colors.accent.copy(alpha = 0.5f),
+                )
+            }
 
 
+            LazyColumn(
+
+            ) {
+                items(10) {
+                    HomeworkItemView(
+                        id = "",
+                        title = "課題",
+                        dueDate = null,
+                        homeworkState = HomeworkState.QUESTION_GENERATED,
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ClassListBanner(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "マイクラス",
+            style = CustomTypography.header
+        )
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = "",
+            tint = MyAppTheme.colors.accent.copy(alpha = 0.5f),
+        )
+    }
+
+    LazyRow(
+    ) {
+        items(5) {
+            ClassItemView(
+                classID = "",
+                className = "App Development",
+                teacherName = "先生名",
+                showIcon = false,
+                height = 80.dp,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(5.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun HomeScreenTopBarContents(
+    userName: String,
+    photoURL: String,
+    modifier: Modifier = Modifier
+) {
+    val brush =
+        Brush.horizontalGradient(listOf<Color>(MyAppTheme.colors.purple, MyAppTheme.colors.blue))
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(brush)
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+        ) {
+            Text(
+                "こんにちは",
+                style = CustomTypography.label,
+                color = Color.Gray
+            )
+            Text(
+                userName,
+                style = CustomTypography.header
+            )
+        }
+
+
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(photoURL)
+                .crossfade(true)
+                .listener(
+                    onError = { request, result ->
+                        Log.e("AsyncImage", "Error loading image: ${result.throwable}")
+                    }
+                )
+                .build(),
+            placeholder = painterResource(id = R.drawable.person_fill),
+            fallback = painterResource(id = R.drawable.person_fill),
+            error = painterResource(id = R.drawable.person_fill),
+            contentDescription = "",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .clip(
+                    CircleShape
+                )
+                .size(50.dp)
+                .border(
+                    border = BorderStroke(width = 1.dp, color = Color.Gray),
+                    shape = CircleShape
+                )
+        )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    val navController = rememberNavController()
+    Scaffold { innerPadding ->
+        HomeScreen(
+            navController = navController,
+            viewModel = HomeScreenViewModel(
+                userDataUseCase = UserDataUseCase(
+                    userDataRepository = TestUserDataRepository()
+                ),
+                authRepository = TestAuthRepository()
+            ),
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+        )
+    }
 }

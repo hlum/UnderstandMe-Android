@@ -1,7 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,15 +32,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseUser
 import jp.ac.jec.cm0138.understandme.Entity.UserData
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOME_ROUTE
-import jp.ac.jec.cm0138.understandme.R
-import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
-import jp.ac.jec.cm0138.understandme.Repository.Impl.AuthResult
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AuthState
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.LoginScreenViewModel
+import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
+import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
@@ -135,15 +132,6 @@ fun LoginScreen(
 }
 
 
-class PreviewAuthRepository() : AuthRepository {
-    override suspend fun signInWithGoogle(context: Context): AuthResult {
-        return AuthResult.Success
-    }
-
-    override fun getCurrentUser(): FirebaseUser {
-        TODO("Not yet implemented")
-    }
-}
 
 class PreviewUserDataRepository(): UserDataRepository {
     override suspend fun saveUserData(userData: UserData) {
@@ -168,7 +156,7 @@ fun LoginScreenPreview() {
         LoginScreen(
             modifier = Modifier.padding(innerpadding),
             viewModel = LoginScreenViewModel(
-                authenticationRepository = PreviewAuthRepository(),
+                authenticationRepository = TestAuthRepository(),
                 userDataUseCase = UserDataUseCase(userDataRepository = PreviewUserDataRepository())
             ),
             onShowSnackbar = { message -> },

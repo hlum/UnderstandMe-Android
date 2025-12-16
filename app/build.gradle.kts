@@ -110,4 +110,11 @@ dependencies {
     // secrets
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
 
+    // coil
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:4.2.1")
+
 }

@@ -65,7 +65,8 @@ fun ClassItemView(
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(16.dp),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Start
     ) {
 
         if (showIcon) {
@@ -86,14 +87,18 @@ fun ClassItemView(
                         color = Color.White
                     )
                 )
+
             }
+
+            Spacer(modifier = Modifier.width(20.dp))
+
         }
 
-        Spacer(modifier = Modifier.width(20.dp))
 
         // Text Content
         Column(
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = className,
