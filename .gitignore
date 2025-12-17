@@ -19,3 +19,7 @@ local.properties
 .idea/
 
 app/google-services.json
+
+app/secrets.properties
+
+secrets.properties
