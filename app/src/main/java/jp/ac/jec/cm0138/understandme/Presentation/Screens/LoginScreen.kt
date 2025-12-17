@@ -147,6 +147,7 @@ class PreviewUserDataRepository(): UserDataRepository {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
