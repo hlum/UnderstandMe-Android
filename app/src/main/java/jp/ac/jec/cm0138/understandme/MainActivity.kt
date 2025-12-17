@@ -25,12 +25,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AppNavigation
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOME_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.LOGIN_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.bottomNavItems
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
@@ -38,10 +44,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AuthStateManager(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-) : ViewModel() {
+@HiltViewModel
+class AuthStateManager @Inject constructor() : ViewModel() {
 
+    private val auth = FirebaseAuth.getInstance()
     private val _isLoginIn = MutableStateFlow((auth.currentUser != null))
     val isLogIn = _isLoginIn.asStateFlow()
 
@@ -51,12 +57,12 @@ class AuthStateManager(
 
 
     init {
-        auth.addAuthStateListener { authListener }
+        auth.addAuthStateListener(authListener)
     }
 
     override fun onCleared() {
         super.onCleared()
-        auth.removeAuthStateListener { authListener }
+        auth.removeAuthStateListener(authListener)
     }
 }
 
@@ -71,8 +77,8 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
 
 
-            val authStateManager: AuthStateManager = AuthStateManager()
-            val isLogIn by authStateManager.isLogIn.collectAsState()
+            val authStateManager: AuthStateManager = hiltViewModel()
+            val isLogIn by authStateManager.isLogIn.collectAsStateWithLifecycle()
 
 
             MyAppTheme {
@@ -83,39 +89,46 @@ class MainActivity : ComponentActivity() {
                             navController.currentBackStackEntryAsState().value?.destination?.route
 
                         if (currentRoute != LOGIN_ROUTE::class.qualifiedName) {
-                                NavigationBar {
+                            NavigationBar {
 
-                                    bottomNavItems.forEach { item ->
-                                        val selected = currentRoute == item.route
+                                bottomNavItems.forEach { item ->
+                                    val selected = currentRoute == item.route
 
-                                        NavigationBarItem(
-                                            selected = selected,
-                                            onClick = { navController.navigate(item.route) },
-                                            icon = {
-                                                Icon(
-                                                    imageVector =  ImageVector.vectorResource(id = item.icon),
-                                                    contentDescription = item.label,
-                                                    modifier = Modifier.size(30.dp)
-                                                )
-                                            },
-                                            label = {
-                                                Text(
-                                                    item.label,
-                                                    style = TextStyle(
-                                                        fontSize = 10.sp,
-                                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                                                    )
-                                                )
-                                            },
-                                            colors = NavigationBarItemDefaults.colors(
-                                                selectedIconColor = MyAppTheme.colors.accent,
-                                                selectedTextColor = MyAppTheme.colors.accent,
-                                                unselectedIconColor = MyAppTheme.colors.secondary,
-                                                unselectedTextColor = MyAppTheme.colors.secondary,
+                                    NavigationBarItem(
+                                        selected = selected,
+                                        onClick = {
+                                            if (!selected) {
+                                                navController.navigate(item.route) {
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            }
+                                        },
+                                        icon = {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(id = item.icon),
+                                                contentDescription = item.label,
+                                                modifier = Modifier.size(30.dp)
                                             )
+                                        },
+                                        label = {
+                                            Text(
+                                                item.label,
+                                                style = TextStyle(
+                                                    fontSize = 10.sp,
+                                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                                                )
+                                            )
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = MyAppTheme.colors.accent,
+                                            selectedTextColor = MyAppTheme.colors.accent,
+                                            unselectedIconColor = MyAppTheme.colors.secondary,
+                                            unselectedTextColor = MyAppTheme.colors.secondary,
                                         )
-                                    }
+                                    )
                                 }
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxSize()

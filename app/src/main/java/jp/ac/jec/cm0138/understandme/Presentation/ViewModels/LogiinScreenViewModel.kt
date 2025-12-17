@@ -9,6 +9,7 @@ import jp.ac.jec.cm0138.understandme.Entity.UserData
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.AuthResult
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -51,7 +52,13 @@ class LoginScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             val authResult = authenticationRepository.signInWithGoogle(context)
-            if(authResult == AuthResult.Success) { registerUser() }
+            
+            if (authResult == AuthResult.Success) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    registerUser()
+                }
+            }
+
             updateAuthState(AuthState.fromAuthResult(authResult))
         }
     }

@@ -1,5 +1,8 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -20,13 +23,20 @@ fun AppNavigation(
 ) {
 
     LaunchedEffect(isLogIn) {
-        if(isLogIn) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+        if(isLogIn && currentRoute == LOGIN_ROUTE::class.qualifiedName) {
             navController.navigate(HOME_ROUTE) {
-                popUpTo(LOGIN_ROUTE) { inclusive = true }
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+
             }
-        } else {
+        } else if (!isLogIn && currentRoute != LOGIN_ROUTE::class.qualifiedName) {
             navController.navigate(LOGIN_ROUTE) {
-                popUpTo(HOME_ROUTE) { inclusive = true }
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
             }
         }
     }
@@ -34,7 +44,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = if(isLogIn) HOME_ROUTE else LOGIN_ROUTE,
+        startDestination = LOGIN_ROUTE,
     ) {
 
         loginNav(
@@ -43,7 +53,14 @@ fun AppNavigation(
             modifier = Modifier.padding(paddingValues)
         )
 
-        composable<HOME_ROUTE> { entry ->
+        composable<HOME_ROUTE>(
+            enterTransition = {
+                fadeIn(animationSpec = tween(durationMillis = 100))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 100))
+            }
+        ) { entry ->
             HomeScreen(
                 navController = navController,
                 modifier = Modifier.padding(paddingValues)

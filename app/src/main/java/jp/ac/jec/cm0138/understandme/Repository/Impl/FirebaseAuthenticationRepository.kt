@@ -25,23 +25,26 @@ class FirebaseAuthenticationRepository(): AuthRepository {
     private val googleAuthHelper = GoogleAuthHelper()
 
     override suspend fun signInWithGoogle(context: Context): AuthResult {
-        return withContext(Dispatchers.IO) {
-            try {
-                val googleIdTokenCredential =
+        return try {
+
+                // CredentialManagerだけはMainThreadで
+                val googleIdTokenCredential = withContext(Dispatchers.Main) {
                     googleAuthHelper.getGoogleIdTokenCredential(context = context)
-                        ?: return@withContext AuthResult.Cancelled
+                } ?: return AuthResult.Cancelled
 
-                val credential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                // Firebase auth は IO
+            withContext(Dispatchers.IO) {
+                val credential =
+                    GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
                 auth.signInWithCredential(credential).await()
+            }
 
-                return@withContext AuthResult.Success
-
+            AuthResult.Success
             } catch (e: Exception) {
                 Log.e(TAG, "Google SignInに失敗しました。原因：${e}")
-                return@withContext AuthResult.Failed
+                AuthResult.Failed
             }
         }
-    }
 
     override fun getCurrentUser(): FirebaseUser {
         val currentUser = auth.currentUser ?: throw Exception("ログインしていない")

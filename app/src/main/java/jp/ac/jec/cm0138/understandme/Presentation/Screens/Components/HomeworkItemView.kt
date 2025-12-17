@@ -122,11 +122,11 @@ fun HomeworkItemView(
 
 
             if(homeworkState == HomeworkState.generatingQuestions) {
-                LottieView(
-                    R.raw.ai,
-                    modifier = Modifier
-                        .size(80.dp)
-                )
+//                LottieView(
+//                    R.raw.ai,
+//                    modifier = Modifier
+//                        .size(80.dp)
+//                )
             }
 
             if(homeworkState == HomeworkState.questionGenerated) {
@@ -155,7 +155,9 @@ fun LottieView(
     id: Int,
     modifier: Modifier = Modifier
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(id))
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(id)
+    )
 
     LottieAnimation(
         modifier = modifier,
