@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 
 @Composable
@@ -69,7 +70,10 @@ fun AppNavigation(
 
 
         composable<CLASSES_ROUTE> { entry ->
-            Text("Classes Screen")
+            ClassListScreen(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
         }
 
         composable<HOMEWORKS_ROUTE> { entry ->

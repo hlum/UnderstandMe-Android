@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -64,9 +65,9 @@ import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
 ) {
 
     LaunchedEffect(Unit) {
@@ -158,7 +159,7 @@ fun ClassListBanner(
         )
     }
 
-    if(!classes.isEmpty()){
+    if (!classes.isEmpty()) {
         LazyRow {
             items(items = classes) { classItem ->
                 ClassItemView(
@@ -267,6 +268,7 @@ fun HomeScreenTopBarContents(
 }
 
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {

@@ -122,11 +122,11 @@ fun HomeworkItemView(
 
 
             if(homeworkState == HomeworkState.generatingQuestions) {
-//                LottieView(
-//                    R.raw.ai,
-//                    modifier = Modifier
-//                        .size(80.dp)
-//                )
+                LottieView(
+                    R.raw.ai,
+                    modifier = Modifier
+                        .size(80.dp)
+                )
             }
 
             if(homeworkState == HomeworkState.questionGenerated) {
