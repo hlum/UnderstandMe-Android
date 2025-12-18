@@ -26,14 +26,15 @@ import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ClassListScreen(
+    modifier: Modifier = Modifier,
     viewModel: ClassListScreenViewModel = hiltViewModel(),
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadClasses()
     }
     Scaffold(
+        modifier = modifier,
         topBar = {
             Text(
                 text = "科目一覧",
@@ -46,7 +47,8 @@ fun ClassListScreen(
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
         ) {
             items(items = viewModel.classes) { classItem ->
                 ClassItemView(

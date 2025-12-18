@@ -9,11 +9,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.BeyondBoundsLayout.LayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
 
 @Composable
 fun AppNavigation(
@@ -64,7 +66,7 @@ fun AppNavigation(
         ) { entry ->
             HomeScreen(
                 navController = navController,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
             )
         }
 
@@ -77,7 +79,7 @@ fun AppNavigation(
         }
 
         composable<HOMEWORKS_ROUTE> { entry ->
-            Text("Homeworks Screen")
+            HomeworkListScreen(modifier = Modifier.padding(paddingValues))
         }
 
         composable<PROFILE_ROUTE> { entry ->

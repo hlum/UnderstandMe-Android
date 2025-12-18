@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -46,7 +50,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import jp.ac.jec.cm0138.understandme.Entity.Class
-import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
@@ -222,6 +225,7 @@ fun HomeScreenTopBarContents(
         modifier = modifier
             .fillMaxWidth()
             .background(brush)
+            .windowInsetsPadding(WindowInsets.statusBars)
             .padding(10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
