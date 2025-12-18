@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,15 +73,15 @@ fun HomeScreen(
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.loadClassesAndHomeworks()
+        viewModel.loadData()
     }
 
     Scaffold(
         modifier = modifier,
         topBar = {
             HomeScreenTopBarContents(
-                userName = "24cm0138",
-                photoURL = "https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg"
+                userName = viewModel.currentUser?.displayName ?: "ゲスト",
+                photoURL = viewModel.currentUser?.photoURL ?: "",
             )
         }
     ) {
