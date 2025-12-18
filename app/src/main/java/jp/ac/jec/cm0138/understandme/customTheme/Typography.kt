@@ -30,6 +30,12 @@ val NotoSansJP = FontFamily(
 object CustomTypography {
     val header = TextStyle(
         fontFamily = NotoSansJP,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    val title = TextStyle(
+        fontFamily = NotoSansJP,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold
     )

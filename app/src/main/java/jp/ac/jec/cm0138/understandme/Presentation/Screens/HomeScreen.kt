@@ -50,6 +50,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeScreenViewModel
@@ -89,7 +90,7 @@ fun HomeScreen(
             modifier = Modifier.padding(it)
         ) {
             ClassListBanner(classes = viewModel.classList)
-            HomeworkListBanner(homeworks = viewModel.homeworks)
+            HomeworkListBanner(navController, homeworks = viewModel.homeworks)
         }
     }
 }
@@ -97,6 +98,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeworkListBanner(
+    navController: NavController,
     homeworks: List<HomeworkWithStatus>,
     modifier: Modifier = Modifier
 ) {
@@ -124,12 +126,12 @@ fun HomeworkListBanner(
     LazyColumn(
 
     ) {
-        items(items = homeworks) { homework ->
+        items(items = homeworks, key = { it.id }) { homework ->
             HomeworkItemView(
-                id = homework.id,
                 title = homework.title,
                 dueDate = homework.dueDateString,
                 homeworkState = homework.submissionState,
+                onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
                 modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
@@ -163,7 +165,7 @@ fun ClassListBanner(
 
     if (!classes.isEmpty()) {
         LazyRow {
-            items(items = classes) { classItem ->
+            items(items = classes, key = { it.id }) { classItem ->
                 ClassItemView(
                     classID = classItem.id,
                     className = classItem.name,
@@ -266,28 +268,6 @@ fun HomeScreenTopBarContents(
                     border = BorderStroke(width = 1.dp, color = Color.Gray),
                     shape = CircleShape
                 )
-        )
-    }
-}
-
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    Scaffold { innerPadding ->
-        HomeScreen(
-            navController = navController,
-            viewModel = HomeScreenViewModel(
-                userDataUseCase = UserDataUseCase(
-                    userDataRepository = TestUserDataRepository()
-                ),
-                authRepository = TestAuthRepository(),
-                classUseCase = ClassUseCase(classRepository = TestClassRepository()),
-                homeworkUseCase = HomeworkUseCase(homeworkRepository = TestHomeworkRepository())
-            ),
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )
     }
 }

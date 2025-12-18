@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
 
 @Composable
@@ -79,11 +80,25 @@ fun AppNavigation(
         }
 
         composable<HOMEWORKS_ROUTE> { entry ->
-            HomeworkListScreen(modifier = Modifier.padding(paddingValues))
+            HomeworkListScreen(
+                modifier = Modifier.padding(paddingValues),
+                navController = navController,
+            )
         }
 
         composable<PROFILE_ROUTE> { entry ->
             Text("Profile Screen")
+        }
+
+
+
+        composable<HOMEWORK_DETAIL_ROUTE> { entry ->
+            val homeworkId = entry.arguments?.getString("homeworkID") ?: ""
+            HomeworkDetailScreen(
+                homeworkID = homeworkId,
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
         }
     }
 }

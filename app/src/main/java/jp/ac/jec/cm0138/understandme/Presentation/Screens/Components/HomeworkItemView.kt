@@ -39,14 +39,15 @@ import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
 
 @Composable
 fun HomeworkItemView(
-    id: String,
     title: String,
     dueDate: String?,
     homeworkState: HomeworkState,
+    onTap: () -> Unit = {},
+    onAnswerClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Surface(
-        onClick = {},
+        onClick = onTap,
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 2.dp,
         modifier = modifier
@@ -128,7 +129,9 @@ fun HomeworkItemView(
             }
 
             if (homeworkState == HomeworkState.questionGenerated) {
-                Surface() {
+                Surface(
+                    onClick = onAnswerClicked
+                ) {
                     Text(
                         text = "回答",
                         style = TextStyle(
@@ -171,7 +174,6 @@ fun LottieView(
 fun HomeworkItemPreview() {
     Scaffold { innerPadding ->
         HomeworkItemView(
-            id = "",
             title = "課題名",
             dueDate = null,
             homeworkState = HomeworkState.questionGenerated,

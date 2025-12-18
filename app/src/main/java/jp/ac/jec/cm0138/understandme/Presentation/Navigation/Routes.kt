@@ -18,6 +18,13 @@ data object HOMEWORKS_ROUTE
 data object PROFILE_ROUTE
 
 
+@Serializable
+data class HOMEWORK_DETAIL_ROUTE(
+    val homeworkID: String
+)
+
+
+
 data class BottomNavItem(
     val route: String,
     val icon: Int,   // Drawable resource ID
