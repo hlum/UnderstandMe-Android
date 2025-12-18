@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 
 @Composable
 fun ClassItemView(
@@ -33,7 +34,7 @@ fun ClassItemView(
     className: String,
     teacherName: String,
     showIcon: Boolean = true,
-    height: Dp =90.dp,
+    height: Dp = 90.dp,
     modifier: Modifier = Modifier
 ) {
     val colors = listOf(
@@ -102,9 +103,7 @@ fun ClassItemView(
         ) {
             Text(
                 text = className,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                style = CustomTypography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -121,7 +120,6 @@ fun ClassItemView(
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun ClassCellPreview() {
@@ -129,8 +127,7 @@ fun ClassCellPreview() {
         ClassItemView(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(10.dp)
-            ,
+                .padding(10.dp),
             classID = "",
             className = "セキュアーコーディング",
             teacherName = "先生名",

@@ -6,19 +6,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
+import jp.ac.jec.cm0138.understandme.Entity.UserData
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.HomeworkUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -40,23 +42,35 @@ class HomeScreenViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
+    var currentUser by mutableStateOf<UserData?>(null)
 
-    fun loadClassesAndHomeworks() {
+
+
+
+
+    fun loadData() {
         if (isLoading) return
-
         viewModelScope.launch {
             isLoading = true
 
             try {
                 // Run heavy work OFF the main thread
-                val (classes, homeworksResult) = withContext(Dispatchers.IO) {
-                    val classesDeferred = async { fetchClassList() }
-                    val homeworksDeferred = async { fetchAndProcessHomeworks() }
+                val (user, classes, homeworksResult) = withContext(Dispatchers.IO) {
+                    coroutineScope {
+                        val userDeferred = async { fetchCurrentUser() }
+                        val classesDeferred = async { fetchClassList() }
+                        val homeworksDeferred = async { fetchAndProcessHomeworks() }
 
-                    classesDeferred.await() to homeworksDeferred.await()
+                        Triple(
+                            userDeferred.await(),
+                            classesDeferred.await(),
+                            homeworksDeferred.await()
+                        )
+                    }
                 }
 
                 // Apply state on MAIN thread
+                currentUser = user
                 classList = classes
                 homeworks = homeworksResult
 
@@ -68,7 +82,10 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-
+    private suspend fun fetchCurrentUser(): UserData {
+        val currentAuthData = authRepository.getCurrentUser()
+        return userDataUseCase.fetchUserData(currentAuthData.uid)
+    }
 
     private suspend fun fetchClassList(): List<Class> {
         val currentUser = authRepository.getCurrentUser()

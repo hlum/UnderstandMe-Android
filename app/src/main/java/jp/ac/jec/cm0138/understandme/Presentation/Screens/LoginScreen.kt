@@ -85,8 +85,7 @@ fun LoginScreen(
             text = "Understand Me",
             modifier = Modifier,
             style = TextStyle(
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 50.sp, fontWeight = FontWeight.Bold
             ),
         )
 
@@ -111,8 +110,7 @@ fun LoginScreen(
                 Image(
                     painter = painterResource(id = R.drawable.google_logo),
                     contentDescription = "Google Sign in",
-                    modifier = Modifier
-                        .width(20.dp)
+                    modifier = Modifier.width(20.dp)
                 )
 
 
@@ -122,8 +120,7 @@ fun LoginScreen(
                     text = "Googleでサインイン",
                     color = MyAppTheme.colors.background,
                     style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 20.sp, fontWeight = FontWeight.Bold
                     )
                 )
             }
@@ -132,8 +129,7 @@ fun LoginScreen(
 }
 
 
-
-class PreviewUserDataRepository(): UserDataRepository {
+class PreviewUserDataRepository() : UserDataRepository {
     override suspend fun saveUserData(userData: UserData) {
         return
     }
@@ -155,13 +151,10 @@ fun LoginScreenPreview() {
 
     Scaffold { innerpadding ->
         LoginScreen(
-            modifier = Modifier.padding(innerpadding),
-            viewModel = LoginScreenViewModel(
+            modifier = Modifier.padding(innerpadding), viewModel = LoginScreenViewModel(
                 authenticationRepository = TestAuthRepository(),
                 userDataUseCase = UserDataUseCase(userDataRepository = PreviewUserDataRepository())
-            ),
-            onShowSnackbar = { message -> },
-            navController = navController
+            ), onShowSnackbar = { message -> }, navController = navController
         )
 
 

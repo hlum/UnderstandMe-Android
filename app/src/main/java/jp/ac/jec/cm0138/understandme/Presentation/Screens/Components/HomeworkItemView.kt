@@ -53,9 +53,9 @@ fun HomeworkItemView(
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -64,7 +64,7 @@ fun HomeworkItemView(
             ) {
                 Text(
                     text = title,
-                    style = CustomTypography.header
+                    style = CustomTypography.titleMedium
                 )
 
                 Row(
@@ -101,10 +101,8 @@ fun HomeworkItemView(
 
                 Text(
                     text = homeworkState.stateDescription,
-                    style = TextStyle(
-                        fontFamily = NotoSansJP,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
+                    style = CustomTypography.label.copy(
+                        fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
@@ -121,7 +119,7 @@ fun HomeworkItemView(
             }
 
 
-            if(homeworkState == HomeworkState.generatingQuestions) {
+            if (homeworkState == HomeworkState.generatingQuestions) {
                 LottieView(
                     R.raw.ai,
                     modifier = Modifier
@@ -129,9 +127,10 @@ fun HomeworkItemView(
                 )
             }
 
-            if(homeworkState == HomeworkState.questionGenerated) {
+            if (homeworkState == HomeworkState.questionGenerated) {
                 Surface() {
-                    Text(text = "回答",
+                    Text(
+                        text = "回答",
                         style = TextStyle(
                             fontFamily = NotoSansJP,
                             fontWeight = FontWeight.Bold,

@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.customTheme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,8 +34,23 @@ object CustomTypography {
         fontWeight = FontWeight.Bold
     )
 
+    val titleMedium = TextStyle(
+        fontFamily = NotoSansJP,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    )
+
+    val body = TextStyle(
+        fontFamily = NotoSansJP,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    )
+
     val label = TextStyle(
         fontFamily = NotoSansJP,
+        fontSize = 12.sp,
         fontWeight = FontWeight.Medium,
     )
 }
