@@ -57,6 +57,32 @@ class HomeworkDetailScreenViewModel @Inject constructor(
     }
 
 
+    fun regenerateQuestions(homeworkID: String) {
+        viewModelScope.launch {
+            val authUser = authRepository.getCurrentUser()
+            homeworkUseCase.retryQuestionGeneration(
+                homeworkID = homeworkID,
+                studentID = authUser.uid
+            )
+
+            reload()
+        }
+    }
+
+
+    fun cancelSubmission(homeworkID: String) {
+        viewModelScope.launch {
+            val authUser = authRepository.getCurrentUser()
+            homeworkUseCase.cancelHomeworkSubmission(
+                homeworkID = homeworkID,
+                studentID = authUser.uid
+            )
+
+            reload()
+        }
+    }   
+
+
     fun reload() {
         viewModelScope.launch {
             val homeworkID = homework?.id ?: return@launch
@@ -65,6 +91,7 @@ class HomeworkDetailScreenViewModel @Inject constructor(
     }
 
     private suspend fun loadHomework(homeworkID: String) {
+
         val authUser = authRepository.getCurrentUser()
 
            try {

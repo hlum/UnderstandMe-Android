@@ -164,16 +164,17 @@ fun HomeworkDetailScreen(
                             .padding(horizontal = 10.dp),
 
 
-                        onClick = {},
+                        onClick = { viewModel.regenerateQuestions(homeworkID = homeworkID) },
                         buttonText = "生成やり直す"
                     )
 
                     OutlinedButton(
                         modifier = Modifier
+                            .padding(10.dp)
                             .fillMaxWidth()
-                            .height(55.dp)
-                            .padding(horizontal = 10.dp),
-                        onClick = {}
+                            .height(55.dp),
+
+                        onClick = { viewModel.cancelSubmission(homeworkID) }
 
                     ) {
                         Text(
