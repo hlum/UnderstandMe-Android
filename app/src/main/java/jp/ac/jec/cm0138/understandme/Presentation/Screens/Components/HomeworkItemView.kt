@@ -95,7 +95,7 @@ fun HomeworkItemView(
                 val brush = Brush.horizontalGradient(
                     listOf<Color>(
                         MyAppTheme.colors.purple,
-                        MyAppTheme.colors.blue
+                        MyAppTheme.colors.lightBlue
                     )
                 )
 

@@ -50,4 +50,9 @@ class FirebaseAuthenticationRepository(): AuthRepository {
         val currentUser = auth.currentUser ?: throw Exception("ログインしていない")
         return currentUser
     }
+
+
+    override fun logOut() {
+        auth.signOut()
+    }
 }

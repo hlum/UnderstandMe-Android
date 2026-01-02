@@ -7,4 +7,5 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.AuthResult
 interface AuthRepository {
     suspend fun signInWithGoogle(context: Context): AuthResult
     fun getCurrentUser(): FirebaseUser
+    fun logOut()
 }

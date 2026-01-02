@@ -19,8 +19,8 @@ class UserDataUseCase @Inject constructor(
         }
 
         if (userInDB == null) {
-            Log.d(TAG, "registerUserIfNotExists: registering user")
-            userDataRepository.saveUserData(userData)
+                Log.d(TAG, "registerUserIfNotExists: registering user")
+                userDataRepository.saveUserData(userData)
         }
     }
 

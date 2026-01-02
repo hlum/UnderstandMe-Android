@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
 
 
             val authStateManager: AuthStateManager = hiltViewModel()
-            val isLogIn by authStateManager.isLogIn.collectAsStateWithLifecycle()
+            val isLogIn  by authStateManager.isLogIn.collectAsStateWithLifecycle()
 
 
             MyAppTheme {
