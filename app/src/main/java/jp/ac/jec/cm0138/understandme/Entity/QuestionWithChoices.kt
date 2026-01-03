@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class QuestionWithChoices(
+    @SerialName("question_id")
     val id: String,
     @SerialName("job_id")
     val jobID: String,

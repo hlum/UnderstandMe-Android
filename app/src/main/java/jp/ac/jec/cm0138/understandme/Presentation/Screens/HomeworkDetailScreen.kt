@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.LottieView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkDetailScreenViewModel
@@ -60,10 +62,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeworkDetailScreen(
+    modifier: Modifier = Modifier,
     homeworkID: String,
     viewModel: HomeworkDetailScreenViewModel = hiltViewModel(),
     navController: NavController,
-    modifier: Modifier = Modifier,
 ) {
 
     LaunchedEffect(Unit) {
@@ -141,7 +143,9 @@ fun HomeworkDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(55.dp),
-                        onAnswerBtnClick = {}
+                        onAnswerBtnClick = {
+                            navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homeworkID, mode = AnswerMode.ANSWER))
+                        }
                     )
                 }
 

@@ -11,16 +11,19 @@ import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.QuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ResultRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.QuestionWithChoicesAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ResultAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.UserAPIService
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -88,6 +91,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideLollipopQuestionWithChoicesRepository(
+        questionWithChoicesAPIService: QuestionWithChoicesAPIService
+    ): QuestionWithChoicesRepository {
+        return LollipopQuestionWithChoicesRepository(questionWithChoicesAPIService = questionWithChoicesAPIService)
+    }
+
+    @Provides
+    @Singleton
     fun provideUserAPIService(
         retrofit: Retrofit
     ): UserAPIService {
@@ -126,6 +137,15 @@ object AppModule {
         retrofit: Retrofit
     ): ResultAPIService {
         return retrofit.create(ResultAPIService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideQuestionWithChoicesAPIService(
+        retrofit: Retrofit
+    ): QuestionWithChoicesAPIService {
+        return retrofit.create(QuestionWithChoicesAPIService::class.java)
     }
 
 

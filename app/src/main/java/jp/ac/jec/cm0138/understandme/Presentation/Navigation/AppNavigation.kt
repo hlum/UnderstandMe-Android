@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.BeyondBoundsLayout.LayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.AnswerQuestionsScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
@@ -96,6 +97,20 @@ fun AppNavigation(
             val homeworkId = entry.arguments?.getString("homeworkID") ?: ""
             HomeworkDetailScreen(
                 homeworkID = homeworkId,
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+
+
+        composable<ANSWER_QUESTIONS_ROUTE> { entry ->
+            val homeworkId = entry.arguments?.getString("homeworkID") ?: ""
+            val modeString = entry.arguments?.getString("mode") ?: "ANSWER"
+            val mode = AnswerMode.valueOf(modeString)
+
+            AnswerQuestionsScreen(
+                homeworkID = homeworkId,
+                mode = mode,
                 navController = navController,
                 modifier = Modifier.padding(paddingValues)
             )

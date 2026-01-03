@@ -2,7 +2,6 @@ package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,45 +15,76 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.Choice
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
+import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AnswerQuestionsScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
 
 @Composable
-fun AnswerQuestionsScreen(modifier: Modifier = Modifier) {
-    var submitted by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = modifier
+fun AnswerQuestionsScreen(
+    modifier: Modifier = Modifier,
+    homeworkID:String,
+    mode: AnswerMode,
+    navController: NavController,
+    viewModel: AnswerQuestionsScreenViewModel = hiltViewModel()
     ) {
-        QuestionCard(
-            questionWithChoices = QuestionWithChoices.getDummy(),
-            onSubmit = { submitted = true },
-            onNextQuestionClick = {},
-            submitted = submitted,
-            modifier = Modifier.padding(10.dp)
-        )
+    var submitted by remember { mutableStateOf(false) }
+    var currentQuestionIndex by remember { mutableStateOf(0) }
+    val questionsWithChoices = viewModel.questionsWithChoices
+    var selectedChoiceID by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadQuestions(homeworkID = homeworkID)
+    }
+    if(viewModel.isLoading || questionsWithChoices.isEmpty()) {
+        CircularProgressIndicator()
+    } else {
+        Column(
+            modifier = modifier
+        ) {
+            val currentQuestion = questionsWithChoices[currentQuestionIndex]
+
+            QuestionCard(
+                questionWithChoices = currentQuestion,
+                onSubmit = { submitted = true },
+                onNextQuestionClick = {
+                    submitted = false
+                    selectedChoiceID = null
+
+                    if (currentQuestionIndex >= questionsWithChoices.size - 1) {
+                        navController.popBackStack()
+                    } else {
+                        currentQuestionIndex++
+                    }
+                },
+                submitted = submitted,
+                selectedChoiceID = selectedChoiceID,
+                onSelect = { selectedChoiceID = it },
+                modifier = Modifier.padding(10.dp)
+            )
+        }
     }
 }
 
@@ -62,13 +92,13 @@ fun AnswerQuestionsScreen(modifier: Modifier = Modifier) {
 @Composable
 fun QuestionCard(
     questionWithChoices: QuestionWithChoices,
+    selectedChoiceID: String?,
+    onSelect: (String) -> Unit,
     submitted: Boolean,
     onSubmit: (String) -> Unit,
     onNextQuestionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedChoiceID by remember { mutableStateOf<String?>(null) }
-
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -97,7 +127,11 @@ fun QuestionCard(
                     choice = it,
                     isSelected = selectedChoiceID == it.id,
                     submitted = submitted,
-                    onSelect = { selectedChoiceID = it.id },
+                    onSelect = {
+                        if (!submitted) {
+                            onSelect(it.id)
+                        }
+                               },
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
@@ -210,10 +244,10 @@ fun ChoiceButton(
 
 
 
-@Preview(showBackground = true, showSystemUi = true, name = "AnswerQuestionsScreen Preview")
-@Composable
-fun AnswerQuestionsScreenPreview() {
-    Scaffold { innerPadding ->
-        AnswerQuestionsScreen(modifier = Modifier.padding(paddingValues = innerPadding))
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true, name = "AnswerQuestionsScreen Preview")
+//@Composable
+//fun AnswerQuestionsScreenPreview() {
+//    Scaffold { innerPadding ->
+//        AnswerQuestionsScreen(modifier = Modifier.padding(paddingValues = innerPadding))
+//    }
+//}

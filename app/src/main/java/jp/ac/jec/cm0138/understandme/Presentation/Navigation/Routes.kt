@@ -24,6 +24,19 @@ data class HOMEWORK_DETAIL_ROUTE(
 )
 
 
+@Serializable
+data class ANSWER_QUESTIONS_ROUTE(
+    val homeworkID: String,
+    val mode: AnswerMode
+)
+
+
+enum class AnswerMode {
+    ANSWER,
+    REVIEW
+}
+
+
 
 data class BottomNavItem(
     val route: String,
