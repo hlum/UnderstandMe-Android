@@ -130,21 +130,22 @@ fun HomeworkItemView(
 
             if (homeworkState == HomeworkState.questionGenerated) {
                 Surface(
-                    onClick = onAnswerClicked
+                    onClick = onAnswerClicked,
+                    shape = RoundedCornerShape(20.dp),
+                    color = MyAppTheme.colors.accent,
+                    modifier = Modifier
+                        .padding(10.dp)
                 ) {
                     Text(
                         text = "回答",
                         style = TextStyle(
                             fontFamily = NotoSansJP,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
+                            color = Color.White
                         ),
                         modifier = Modifier
-                            .padding(10.dp)
-                            .clip(RoundedCornerShape(40.dp))
-                            .background(Color.Blue.copy(alpha = 0.3f))
-                            .padding(horizontal = 10.dp)
-                            .padding(13.dp)
+                            .padding(horizontal = 20.dp, vertical = 15.dp)
                     )
                 }
             }

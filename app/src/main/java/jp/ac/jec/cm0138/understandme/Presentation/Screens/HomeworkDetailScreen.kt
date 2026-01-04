@@ -236,12 +236,13 @@ fun QuestionGeneratedUI(
 
     Surface(
         onClick = onAnswerBtnClick,
+        shape = (RoundedCornerShape(30.dp)),
+        color = MyAppTheme.colors.accent,
         modifier = modifier
+            .padding(horizontal = 10.dp)
     ) {
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(30.dp))
-                .background(MyAppTheme.colors.accent),
+            modifier = Modifier,
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
