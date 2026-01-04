@@ -43,6 +43,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AnswerQuestionsScre
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
+import kotlinx.coroutines.delay
 
 @Composable
 fun AnswerQuestionsScreen(
@@ -57,9 +58,12 @@ fun AnswerQuestionsScreen(
     val questionsWithChoices = viewModel.questionsWithChoices
     var selectedChoiceID by remember { mutableStateOf<String?>(null) }
 
+
+
     LaunchedEffect(Unit) {
         viewModel.loadQuestions(homeworkID = homeworkID)
     }
+
     if (viewModel.isLoading || questionsWithChoices.isEmpty()) {
         Box(
             modifier = Modifier
@@ -71,6 +75,8 @@ fun AnswerQuestionsScreen(
         }
         return
     }
+
+
     Column(
         modifier = modifier
     ) {
@@ -101,10 +107,13 @@ fun AnswerQuestionsScreen(
 }
 
 
+
+
 @Composable
 fun QuestionCard(
     questionWithChoices: QuestionWithChoices,
     selectedChoiceID: String?,
+    mainTimerDuration: Int = 20,
     isLastQuestion: Boolean,
     mode: AnswerMode,
     onSelect: (String) -> Unit,
@@ -114,6 +123,18 @@ fun QuestionCard(
     userSelectedChoiceID: String? = null, // only for review mode
     modifier: Modifier = Modifier
 ) {
+
+    var mainTimerTimeLeft by remember { mutableStateOf(mainTimerDuration) }
+
+    LaunchedEffect(questionWithChoices.id) {
+        while (mainTimerTimeLeft > 0) {
+            delay(1000L)
+            mainTimerTimeLeft--
+        }
+        onNextQuestionClick()
+        mainTimerTimeLeft = mainTimerDuration
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -123,7 +144,7 @@ fun QuestionCard(
     ) {
         if (mode == AnswerMode.ANSWER) {
             Text(
-                "残り時間: 10s",
+                "残り時間: ${mainTimerTimeLeft}秒",
                 modifier = Modifier,
                 style = CustomTypography.body.copy(
                     color = Color.Red
