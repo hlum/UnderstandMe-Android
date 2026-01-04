@@ -32,6 +32,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkFilterOption
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkListScreenViewModel
@@ -71,6 +73,9 @@ fun HomeworkListScreen(
                     homeworkState = homework.submissionState,
                     onTap = {
                         navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
+                    },
+                    onAnswerClicked = {
+                        navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
                     },
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
