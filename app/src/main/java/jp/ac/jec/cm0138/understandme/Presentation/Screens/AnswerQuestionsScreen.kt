@@ -69,6 +69,7 @@ fun AnswerQuestionsScreen(
             QuestionCard(
                 questionWithChoices = currentQuestion,
                 onSubmit = { submitted = true },
+                mode = mode,
                 onNextQuestionClick = {
                     submitted = false
                     selectedChoiceID = null
@@ -82,6 +83,7 @@ fun AnswerQuestionsScreen(
                 submitted = submitted,
                 selectedChoiceID = selectedChoiceID,
                 onSelect = { selectedChoiceID = it },
+                isLastQuestion = currentQuestionIndex == questionsWithChoices.size -1,
                 modifier = Modifier.padding(10.dp)
             )
         }
@@ -93,10 +95,13 @@ fun AnswerQuestionsScreen(
 fun QuestionCard(
     questionWithChoices: QuestionWithChoices,
     selectedChoiceID: String?,
+    isLastQuestion: Boolean,
+    mode: AnswerMode,
     onSelect: (String) -> Unit,
     submitted: Boolean,
     onSubmit: (String) -> Unit,
     onNextQuestionClick: () -> Unit,
+    userSelectedChoiceID: String? = null, // only for review mode
     modifier: Modifier = Modifier
 ) {
         Column(
@@ -106,13 +111,15 @@ fun QuestionCard(
                 .background(MyAppTheme.colors.background, RoundedCornerShape(12.dp))
                 .padding(10.dp)
         ) {
-            Text(
-                "残り時間: 10s",
-                modifier = Modifier,
-                style = CustomTypography.body.copy(
-                    color = Color.Red
+            if (mode == AnswerMode.ANSWER) {
+                Text(
+                    "残り時間: 10s",
+                    modifier = Modifier,
+                    style = CustomTypography.body.copy(
+                        color = Color.Red
+                    )
                 )
-            )
+            }
 
             Text(
                 questionWithChoices.questionText,
@@ -123,12 +130,17 @@ fun QuestionCard(
 
 
             questionWithChoices.choices.forEach {
+                val isChoiceSelected: Boolean = if (mode == AnswerMode.ANSWER) {
+                    selectedChoiceID == it.id
+                } else {
+                    userSelectedChoiceID == it.id
+                }
                 ChoiceButton(
                     choice = it,
-                    isSelected = selectedChoiceID == it.id,
+                    isSelected = isChoiceSelected,
                     submitted = submitted,
                     onSelect = {
-                        if (!submitted) {
+                        if (mode == AnswerMode.ANSWER && !submitted) {
                             onSelect(it.id)
                         }
                                },
@@ -138,28 +150,34 @@ fun QuestionCard(
 
 
 
-            Button(
-                onClick = {
-                    if(selectedChoiceID != null && !submitted) {
-                        onSubmit(selectedChoiceID!!)
-                    } else if (submitted) {
-                        onNextQuestionClick()
+            if (mode == AnswerMode.ANSWER) {
+                Button(
+                    onClick = {
+                        if (selectedChoiceID != null && !submitted) {
+                            onSubmit(selectedChoiceID)
+                        } else if (submitted) {
+                            onNextQuestionClick()
+                        }
+                    },
+                    enabled = selectedChoiceID != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.customPrimaryButtonColors(),
+                    shape = RoundedCornerShape(15.dp)
+                ) {
+                    val buttonText = if (submitted) {
+                        if (isLastQuestion) "終了" else "次の質問へ"
+                    } else {
+                        "回答を送信"
                     }
-                          },
-                enabled = selectedChoiceID != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-                    .height(50.dp),
-                colors = ButtonDefaults.customPrimaryButtonColors(),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                val buttonText = if(submitted) "次の質問へ" else "回答を送信"
-                Text(
-                    text = buttonText,
-                    style = CustomTypography.header.copy(fontSize = 18 .sp),
-                    color = Color.White
-                )
+                    Text(
+                        text = buttonText,
+                        style = CustomTypography.header.copy(fontSize = 18.sp),
+                        color = Color.White
+                    )
+                }
             }
         }
 }
