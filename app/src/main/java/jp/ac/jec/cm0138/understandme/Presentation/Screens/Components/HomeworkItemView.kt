@@ -43,7 +43,7 @@ fun HomeworkItemView(
     dueDate: String?,
     homeworkState: HomeworkState,
     onTap: () -> Unit = {},
-    onAnswerClicked: () -> Unit = {},
+    onAnswerClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -178,6 +178,7 @@ fun HomeworkItemPreview() {
             title = "課題名",
             dueDate = null,
             homeworkState = HomeworkState.questionGenerated,
+            onAnswerClicked = {},
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(10.dp)

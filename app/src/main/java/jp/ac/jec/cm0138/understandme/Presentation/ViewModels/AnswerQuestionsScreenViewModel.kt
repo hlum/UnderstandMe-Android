@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.AnswerUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.QuestionWithChoicesUseCase
@@ -96,9 +97,9 @@ class AnswerQuestionsScreenViewModel @Inject constructor(
     }
 
 
-    fun goToNextQuestion(navController: NavController) {
+    fun goToNextQuestion(navController: NavController, homeworkID: String) {
         if (currentQuestionIndex >= questionsWithChoices.size - 1) {
-            navController.popBackStack()
+            navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homeworkID))
         } else {
             currentQuestionIndex++
         }

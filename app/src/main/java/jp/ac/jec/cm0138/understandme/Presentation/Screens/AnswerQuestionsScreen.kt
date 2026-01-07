@@ -91,7 +91,7 @@ fun AnswerQuestionsScreen(
                 homeworkID = homeworkID,
             )
         }
-        viewModel.goToNextQuestion(navController)
+        viewModel.goToNextQuestion(navController, homeworkID)
     }
 
     if (viewModel.isLoading || questionsWithChoices.isEmpty()) {
@@ -123,7 +123,7 @@ fun AnswerQuestionsScreen(
             },
             mode = mode,
             onNextQuestionClick = {
-                viewModel.goToNextQuestion(navController)
+                viewModel.goToNextQuestion(navController, homeworkID)
             },
             submitted = submitted,
             selectedChoiceID = selectedChoiceID,
@@ -150,7 +150,7 @@ fun AnswerQuestionsScreen(
                         homeworkID = homeworkID,
                     )
                 }
-                viewModel.goToNextQuestion(navController)
+                viewModel.goToNextQuestion(navController, homeworkID)
             })
     }
 }

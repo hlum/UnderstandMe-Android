@@ -75,11 +75,11 @@ fun ProfileScreen(
 
             ProfileImage(
                 modifier = Modifier.padding(top = 10.dp),
-                photoURL = ""
+                photoURL = viewModel.userData?.photoURL ?: ""
             )
 
             Text(
-                text = "24cm0138",
+                text = viewModel.userData?.displayName ?: "ゲストユーザー",
                 modifier = Modifier,
                 style = CustomTypography.header.copy(
                     color = Color.Black,
@@ -88,7 +88,7 @@ fun ProfileScreen(
             )
 
             Text(
-                text = "24cm0138@jec.ac.jp",
+                text = viewModel.userData?.email ?: "",
                 modifier = Modifier,
                 style = CustomTypography.body.copy(
                     color = Color.Gray,
@@ -134,7 +134,7 @@ fun ProfileScreen(
 
             LogoutButton(
                 onClick = {
-                    // TODO: Handle logout action
+                    viewModel.signOut()
                 }
             )
 
