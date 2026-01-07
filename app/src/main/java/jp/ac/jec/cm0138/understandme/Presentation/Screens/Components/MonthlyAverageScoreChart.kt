@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,16 +36,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLineComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberEnd
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.compose.common.shape.dashedShape
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.common.Fill
 import jp.ac.jec.cm0138.understandme.Entity.ResultData
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import java.time.LocalDateTime
@@ -80,7 +86,9 @@ fun MonthlyAverageScoreChart(
     LaunchedEffect(monthlyData) {
         modelProducer.runTransaction {
             columnSeries {
-                series(monthlyData.map { it.averageScore })
+                // Add scores with a hidden max value point to force Y-axis to 100
+                val scores = monthlyData.map { it.averageScore.toDouble() }
+                series(scores)
             }
         }
     }
@@ -128,8 +136,18 @@ fun MonthlyAverageScoreChart(
                             chart = rememberCartesianChart(
                                 rememberColumnCartesianLayer(),
                                 endAxis = VerticalAxis.rememberEnd(
-                                    itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
-                                    label = rememberTextComponent(color = Color.Gray)
+                                    itemPlacer = VerticalAxis.ItemPlacer.count({ 6 }),
+                                    label = rememberTextComponent(color = Color.Gray),
+                                    valueFormatter = { _, value, _ ->
+                                        value.toInt().toString()
+                                    },
+                                    line = rememberAxisLineComponent(
+                                        fill = fill(Color.Gray)
+                                    ),
+                                    guideline = rememberAxisGuidelineComponent(
+                                        fill = fill(Color.Gray.copy(alpha = 0.5f)),
+                                        shape = dashedShape()
+                                    )
                                 ),
                                 bottomAxis = HorizontalAxis.rememberBottom(
                                     label = rememberTextComponent(color = Color.Gray),
@@ -138,7 +156,8 @@ fun MonthlyAverageScoreChart(
                                         if (monthIndex in monthlyData.indices) {
                                             "${monthlyData[monthIndex].month.month.value}月"
                                         } else ""
-                                    }
+                                    },
+                                    guideline = null
                                 )
                             ),
                             modelProducer = modelProducer,
