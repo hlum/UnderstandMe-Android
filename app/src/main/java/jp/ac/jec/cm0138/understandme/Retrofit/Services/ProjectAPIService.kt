@@ -2,6 +2,7 @@ package jp.ac.jec.cm0138.understandme.Retrofit.Services
 
 import jp.ac.jec.cm0138.understandme.Entity.APIResponse
 import kotlinx.serialization.Serializable
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.PATCH
 
@@ -16,5 +17,5 @@ interface ProjectAPIService {
     @PATCH("project/add_project.php")
     suspend fun uploadProject(
         @Body request: UploadProjectRequest
-    ): APIResponse<Unit>
+    ): Response<APIResponse<Unit>>
 }

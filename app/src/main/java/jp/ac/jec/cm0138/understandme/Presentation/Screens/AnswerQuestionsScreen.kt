@@ -1,6 +1,5 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,20 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import jp.ac.jec.cm0138.understandme.Entity.Choice
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ArcTimerButton
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AnswerQuestionsScreenViewModel
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestQuestionWithChoicesRepository
-import jp.ac.jec.cm0138.understandme.UseCase.QuestionWithChoicesUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
@@ -62,8 +55,8 @@ fun AnswerQuestionsScreen(
     viewModel: AnswerQuestionsScreenViewModel = hiltViewModel()
 ) {
     var submitted by remember { mutableStateOf(false) }
-    var currentQuestionIndex by remember { mutableStateOf(0) }
     val questionsWithChoices = viewModel.questionsWithChoices
+    val currentQuestionIndex = viewModel.currentQuestionIndex
     var selectedChoiceID by remember { mutableStateOf<String?>(null) }
 
     val progress = remember { mutableStateOf(0f) }
@@ -73,13 +66,14 @@ fun AnswerQuestionsScreen(
         viewModel.loadQuestions(homeworkID = homeworkID)
     }
 
-    // Reset timer when question changes
+    // Reset timers when question changes
     LaunchedEffect(currentQuestionIndex) {
         progress.value = 0f
         mainTimerDuration = 20
         submitted = false
         selectedChoiceID = null
     }
+
 
     LaunchedEffect(currentQuestionIndex) {
         var remaining = mainTimerDuration
@@ -89,20 +83,22 @@ fun AnswerQuestionsScreen(
             remaining--
             mainTimerDuration--
         }
-
-        if (currentQuestionIndex >= questionsWithChoices.size - 1) {
-            navController.popBackStack()
-        } else {
-            currentQuestionIndex++
+        // Time's up, auto-submit with no answer
+        if (!submitted) {
+            viewModel.postAnswer(
+                questionID = questionsWithChoices[currentQuestionIndex].id,
+                selectedChoiceID = null,
+                homeworkID = homeworkID,
+            )
         }
+        viewModel.goToNextQuestion(navController)
     }
 
     if (viewModel.isLoading || questionsWithChoices.isEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp),
-            contentAlignment = Alignment.Center
+                .padding(10.dp), contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
@@ -117,14 +113,17 @@ fun AnswerQuestionsScreen(
 
         QuestionCard(
             questionWithChoices = currentQuestion,
-            onSubmit = { submitted = true },
+            onSubmit = {
+                viewModel.postAnswer(
+                    questionID = currentQuestion.id,
+                    homeworkID = homeworkID,
+                    selectedChoiceID = selectedChoiceID
+                )
+                submitted = true
+            },
             mode = mode,
             onNextQuestionClick = {
-                if (currentQuestionIndex >= questionsWithChoices.size - 1) {
-                    navController.popBackStack()
-                } else {
-                    currentQuestionIndex++
-                }
+                viewModel.goToNextQuestion(navController)
             },
             submitted = submitted,
             selectedChoiceID = selectedChoiceID,
@@ -144,19 +143,17 @@ fun AnswerQuestionsScreen(
             durationSeconds = 10,
             label = "Push",
             onComplete = {
-                if (currentQuestionIndex >= questionsWithChoices.size - 1) {
-                    navController.popBackStack()
-                } else {
-                    currentQuestionIndex++
+                if (!submitted) {
+                    viewModel.postAnswer(
+                        questionID = questionsWithChoices[currentQuestionIndex].id,
+                        selectedChoiceID = null,
+                        homeworkID = homeworkID,
+                    )
                 }
-            }
-        )
-
+                viewModel.goToNextQuestion(navController)
+            })
     }
-
 }
-
-
 
 
 @Composable
@@ -173,8 +170,6 @@ fun QuestionCard(
     userSelectedChoiceID: String? = null, // only for review mode
     modifier: Modifier = Modifier
 ) {
-
-
 
 
     Column(
@@ -209,15 +204,11 @@ fun QuestionCard(
                 userSelectedChoiceID == it.id
             }
             ChoiceButton(
-                choice = it,
-                isSelected = isChoiceSelected,
-                submitted = submitted,
-                onSelect = {
+                choice = it, isSelected = isChoiceSelected, submitted = submitted, onSelect = {
                     if (mode == AnswerMode.ANSWER && !submitted) {
                         onSelect(it.id)
                     }
-                },
-                modifier = Modifier.padding(vertical = 4.dp)
+                }, modifier = Modifier.padding(vertical = 4.dp)
             )
         }
 
@@ -279,9 +270,7 @@ fun ChoiceButton(
         border = BorderStroke(2.dp, borderColor)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
 
             Text(
@@ -328,27 +317,5 @@ fun ChoiceButton(
                 }
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true, showSystemUi = true, name = "AnswerQuestionsScreen Preview")
-@Composable
-fun AnswerQuestionsScreenPreview() {
-    val navController = rememberNavController()
-
-    Scaffold { innerPadding ->
-        AnswerQuestionsScreen(
-            modifier = Modifier.padding(paddingValues = innerPadding),
-            homeworkID = "",
-            mode = AnswerMode.ANSWER,
-            navController = navController,
-            viewModel = AnswerQuestionsScreenViewModel(
-                authRepository = TestAuthRepository(),
-                questionWithChoicesUseCase = QuestionWithChoicesUseCase(
-                    questionWithChoicesRepository = TestQuestionWithChoicesRepository()
-                )
-            )
-        )
     }
 }

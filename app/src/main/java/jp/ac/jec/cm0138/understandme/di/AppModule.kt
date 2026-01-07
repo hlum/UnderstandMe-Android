@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import jp.ac.jec.cm0138.understandme.BuildConfig
 import jp.ac.jec.cm0138.understandme.LollipopResultRepository.Impl.LollipopResultRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.AnswerRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
@@ -15,11 +16,13 @@ import jp.ac.jec.cm0138.understandme.Repository.Abstract.QuestionWithChoicesRepo
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ResultRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAnswerRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
@@ -99,6 +102,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideLollipopAnswerRepository(
+        answerAPIService: AnswerAPIService
+    ): AnswerRepository {
+        return LollipopAnswerRepository(answerAPIService = answerAPIService)
+    }
+
+    @Provides
+    @Singleton
     fun provideUserAPIService(
         retrofit: Retrofit
     ): UserAPIService {
@@ -146,6 +157,15 @@ object AppModule {
         retrofit: Retrofit
     ): QuestionWithChoicesAPIService {
         return retrofit.create(QuestionWithChoicesAPIService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAnswerAPIService(
+        retrofit: Retrofit
+    ): AnswerAPIService {
+        return retrofit.create(AnswerAPIService::class.java)
     }
 
 

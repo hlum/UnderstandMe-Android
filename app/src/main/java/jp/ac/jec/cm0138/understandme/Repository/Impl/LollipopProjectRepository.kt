@@ -1,6 +1,7 @@
 package jp.ac.jec.cm0138.understandme.Repository.Impl
 
 import jakarta.inject.Inject
+import jp.ac.jec.cm0138.understandme.Helper.LollipopAPIHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.UploadProjectRequest
@@ -20,9 +21,7 @@ class LollipopProjectRepository @Inject constructor(
         )
 
         val response = projectAPIService.uploadProject(request)
-        if (response.status != "success") {
-            throw IllegalStateException(response.message ?: "Unknown error")
-        }
+        LollipopAPIHelper.handleAPIResponse(response)
     }
 
 }

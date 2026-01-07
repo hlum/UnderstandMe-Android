@@ -2,18 +2,21 @@ package jp.ac.jec.cm0138.understandme.Entity
 
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Serializable
 data class ResultData(
     val id: String,
-    @SerializedName("user_id") val userID: String,
-    @SerializedName("homework_id") val homeworkID: String,
-    @SerializedName("total_questions") val totalQuestions: Int,
-    @SerializedName("correct_answers") val correctAnswers: Int,
+    @SerialName("user_id") val userID: String,
+    @SerialName("total_questions") val totalQuestions: Int,
+    @SerialName("homework_id") val homeworkID: String,
+    @SerialName("correct_answers") val correctAnswers: Int,
     val score: Int,
-    @SerializedName("evaluated_at") val evaluatedAt: String
+    @SerialName("evaluated_at") val evaluatedAt: String
 ) {
     companion object {
         // Function to create dummy data

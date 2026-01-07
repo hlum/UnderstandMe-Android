@@ -1,6 +1,7 @@
 package jp.ac.jec.cm0138.understandme.Repository.Impl
 
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
+import jp.ac.jec.cm0138.understandme.Helper.LollipopAPIHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.QuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.QuestionWithChoicesAPIService
 import javax.inject.Inject
@@ -17,12 +18,8 @@ class LollipopQuestionWithChoicesRepository @Inject constructor(
             homeworkID = homeworkID
         )
 
-        if (response.status != "success") {
-            throw Exception("Error: ${response.message}")
-        }
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
 
-        val list = response.data ?: throw Exception("No data")
-
-        return list
+        return apiResponse.data ?: throw IllegalStateException("Questions with choices not found")
     }
 }
