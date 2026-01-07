@@ -159,14 +159,14 @@ fun AnswerQuestionsScreen(
 @Composable
 fun QuestionCard(
     questionWithChoices: QuestionWithChoices,
-    selectedChoiceID: String?,
+    selectedChoiceID: String? = null,
     mainTimerDuration: Int = 20,
-    isLastQuestion: Boolean,
+    isLastQuestion: Boolean = false,
     mode: AnswerMode,
-    onSelect: (String) -> Unit,
+    onSelect: (String) -> Unit = {},
     submitted: Boolean,
-    onSubmit: (String) -> Unit,
-    onNextQuestionClick: () -> Unit,
+    onSubmit: (String) -> Unit = {},
+    onNextQuestionClick: () -> Unit = {},
     userSelectedChoiceID: String? = null, // only for review mode
     modifier: Modifier = Modifier
 ) {
@@ -187,6 +187,16 @@ fun QuestionCard(
                     color = Color.Red
                 )
             )
+        } else {
+            if (userSelectedChoiceID == null) {
+                Text(
+                    "未回答の質問",
+                    modifier = Modifier,
+                    style = CustomTypography.body.copy(
+                        color = Color.Red
+                    )
+                )
+            }
         }
 
         Text(
@@ -204,7 +214,10 @@ fun QuestionCard(
                 userSelectedChoiceID == it.id
             }
             ChoiceButton(
-                choice = it, isSelected = isChoiceSelected, submitted = submitted, onSelect = {
+                choice = it,
+                isSelected = isChoiceSelected,
+                submitted = submitted,
+                onSelect = {
                     if (mode == AnswerMode.ANSWER && !submitted) {
                         onSelect(it.id)
                     }
