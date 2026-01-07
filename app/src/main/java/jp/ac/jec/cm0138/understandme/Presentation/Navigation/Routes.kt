@@ -18,6 +18,31 @@ data object HOMEWORKS_ROUTE
 data object PROFILE_ROUTE
 
 
+@Serializable
+data class HOMEWORK_DETAIL_ROUTE(
+    val homeworkID: String
+)
+
+
+@Serializable
+data class ANSWER_QUESTIONS_ROUTE(
+    val homeworkID: String,
+    val mode: AnswerMode
+)
+
+@Serializable
+data class RESULT_CONFIRMATION_ROUTE(
+    val homeworkID: String
+)
+
+
+enum class AnswerMode {
+    ANSWER,
+    REVIEW
+}
+
+
+
 data class BottomNavItem(
     val route: String,
     val icon: Int,   // Drawable resource ID

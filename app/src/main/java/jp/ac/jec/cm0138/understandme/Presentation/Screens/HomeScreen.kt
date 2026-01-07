@@ -1,6 +1,5 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
@@ -39,28 +39,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestClassRepository
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestHomeworkRepository
-import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestUserDataRepository
-import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCase
-import jp.ac.jec.cm0138.understandme.UseCase.HomeworkUseCase
-import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
@@ -88,8 +80,11 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
+            Button(
+                onClick = {viewModel.logout()}
+            ) {Text("Log out") }
             ClassListBanner(classes = viewModel.classList)
-            HomeworkListBanner(homeworks = viewModel.homeworks)
+            HomeworkListBanner(navController, homeworks = viewModel.homeworks)
         }
     }
 }
@@ -97,6 +92,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeworkListBanner(
+    navController: NavController,
     homeworks: List<HomeworkWithStatus>,
     modifier: Modifier = Modifier
 ) {
@@ -124,12 +120,12 @@ fun HomeworkListBanner(
     LazyColumn(
 
     ) {
-        items(items = homeworks) { homework ->
+        items(items = homeworks, key = { it.id }) { homework ->
             HomeworkItemView(
-                id = homework.id,
                 title = homework.title,
                 dueDate = homework.dueDateString,
                 homeworkState = homework.submissionState,
+                onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
                 modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
@@ -163,7 +159,7 @@ fun ClassListBanner(
 
     if (!classes.isEmpty()) {
         LazyRow {
-            items(items = classes) { classItem ->
+            items(items = classes, key = { it.id }) { classItem ->
                 ClassItemView(
                     classID = classItem.id,
                     className = classItem.name,
@@ -218,7 +214,7 @@ fun HomeScreenTopBarContents(
     modifier: Modifier = Modifier
 ) {
     val brush =
-        Brush.horizontalGradient(listOf<Color>(MyAppTheme.colors.purple, MyAppTheme.colors.blue))
+        Brush.horizontalGradient(listOf<Color>(MyAppTheme.colors.purple, MyAppTheme.colors.lightBlue))
 
     Row(
         modifier = modifier
@@ -266,28 +262,6 @@ fun HomeScreenTopBarContents(
                     border = BorderStroke(width = 1.dp, color = Color.Gray),
                     shape = CircleShape
                 )
-        )
-    }
-}
-
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    Scaffold { innerPadding ->
-        HomeScreen(
-            navController = navController,
-            viewModel = HomeScreenViewModel(
-                userDataUseCase = UserDataUseCase(
-                    userDataRepository = TestUserDataRepository()
-                ),
-                authRepository = TestAuthRepository(),
-                classUseCase = ClassUseCase(classRepository = TestClassRepository()),
-                homeworkUseCase = HomeworkUseCase(homeworkRepository = TestHomeworkRepository())
-            ),
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )
     }
 }

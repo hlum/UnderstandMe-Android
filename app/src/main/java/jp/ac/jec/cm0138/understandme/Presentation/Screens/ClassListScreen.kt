@@ -50,7 +50,7 @@ fun ClassListScreen(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            items(items = viewModel.classes) { classItem ->
+            items(items = viewModel.classes, key = { it.id }) { classItem ->
                 ClassItemView(
                     classID = classItem.id,
                     className = classItem.name,

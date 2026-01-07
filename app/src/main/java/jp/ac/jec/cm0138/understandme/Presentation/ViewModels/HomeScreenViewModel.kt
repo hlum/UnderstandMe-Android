@@ -46,7 +46,11 @@ class HomeScreenViewModel @Inject constructor(
 
 
 
-
+fun logout() {
+    viewModelScope.launch {
+        authRepository.logOut()
+    }
+}
 
     fun loadData() {
         if (isLoading) return

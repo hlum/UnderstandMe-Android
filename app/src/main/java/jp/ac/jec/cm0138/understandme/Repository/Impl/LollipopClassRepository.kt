@@ -2,6 +2,7 @@ package jp.ac.jec.cm0138.understandme.Repository.Impl
 
 import jakarta.inject.Inject
 import jp.ac.jec.cm0138.understandme.Entity.Class
+import jp.ac.jec.cm0138.understandme.Helper.LollipopAPIHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AddOptionalClassRequest
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
@@ -15,47 +16,32 @@ class LollipopClassRepository @Inject constructor(
         val request = AddOptionalClassRequest(userID, classCode)
         val response = classAPIService.attendToOptionalClass(request)
 
-        if(response.status != "success") {
-            throw Exception("Error: ${response.message}")
-        }
+        LollipopAPIHelper.handleAPIResponse(response)
     }
 
 
     override suspend fun fetchClassWithClassCode(classCode: String): Class {
         val response = classAPIService.fetchClassWithClassCode(classCode)
 
-        if(response.status != "success") {
-            throw Exception("Error: ${response.message}")
-        }
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
 
-        val list = response.data ?: throw Exception("No data")
-
-        return list.firstOrNull() ?: throw Exception("Class not found")
+        return apiResponse.data?.firstOrNull() ?: throw Exception("Class not found")
     }
 
 
     override suspend fun fetchClassWithID(id: String): Class {
         val response = classAPIService.fetchClassWithID(id)
 
-        if(response.status != "success") {
-            throw Exception("Error: ${response.message}")
-        }
-
-        val list = response.data ?: throw Exception("No data")
-
-        return list.firstOrNull() ?: throw Exception("Class not found")
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
+        return apiResponse.data?.firstOrNull() ?: throw Exception("Class not found")
     }
 
 
     override suspend fun fetchAllClasses(userID: String): List<Class> {
         val response = classAPIService.fetchAllClass(userID)
 
-        if(response.status != "success") {
-            throw Exception("Error: ${response.message}")
-        }
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
 
-        val list = response.data ?: throw Exception("No data")
-
-        return list
+        return apiResponse.data ?: throw IllegalStateException("No classes found")
     }
 }

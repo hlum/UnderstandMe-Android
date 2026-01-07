@@ -3,10 +3,12 @@ import android.util.Log
 import jakarta.inject.Inject
 import jp.ac.jec.cm0138.understandme.Entity.APIResponse
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
+import jp.ac.jec.cm0138.understandme.Helper.LollipopAPIHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.CancelHomeworkRequest
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.RetryJobRequest
+import retrofit2.Response
 
 
 class LollipopHomeworkRepository @Inject constructor(
@@ -41,16 +43,14 @@ class LollipopHomeworkRepository @Inject constructor(
     }
 
     private suspend fun fetchHomeworksInternal(
-        request: suspend () -> APIResponse<List<HomeworkWithStatus>>
+        request: suspend () -> Response<APIResponse<List<HomeworkWithStatus>>>
     ): List<HomeworkWithStatus> {
 
         val response = request()
 
-        if (response.status != "success") {
-            throw IllegalStateException(response.message ?: "Unknown error")
-        }
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
 
-        return response.data ?: emptyList()
+        return apiResponse.data ?: emptyList()
     }
 
     override suspend fun retryQuestionGeneration(
@@ -64,9 +64,7 @@ class LollipopHomeworkRepository @Inject constructor(
             )
         )
 
-        if (response.status != "success") {
-            throw IllegalStateException(response.message ?: "Retry failed")
-        }
+        LollipopAPIHelper.handleAPIResponse(response)
 
         Log.i("LollipopRepo", "問題生成の再試行に成功: homeworkID=$homeworkID")
     }
@@ -82,9 +80,7 @@ class LollipopHomeworkRepository @Inject constructor(
             )
         )
 
-        if (response.status != "success") {
-            throw IllegalStateException(response.message ?: "Cancel failed")
-        }
+        LollipopAPIHelper.handleAPIResponse(response)
 
         Log.i("LollipopRepo", "宿題提出のキャンセルに成功: homeworkID=$homeworkID")
     }

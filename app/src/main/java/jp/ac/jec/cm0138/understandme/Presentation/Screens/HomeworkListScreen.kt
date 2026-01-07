@@ -29,8 +29,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkFilterOption
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkListScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
@@ -39,6 +43,7 @@ import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 @Composable
 fun HomeworkListScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: HomeworkListScreenViewModel = hiltViewModel()
 ) {
 
@@ -61,12 +66,17 @@ fun HomeworkListScreen(
             modifier = Modifier
                 .padding(it)
         ) {
-            items(items = viewModel.filteredHomeworks) { homework ->
+            items(items = viewModel.filteredHomeworks, key = { it.id }) { homework ->
                 HomeworkItemView(
-                    id = homework.id,
                     title = homework.title,
                     dueDate = homework.dueDateString,
                     homeworkState = homework.submissionState,
+                    onTap = {
+                        navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
+                    },
+                    onAnswerClicked = {
+                        navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
+                    },
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                 )
@@ -206,6 +216,7 @@ fun HomeworkListScreenPreview() {
     Scaffold { innerpadding ->
         HomeworkListScreen(
             modifier = Modifier.padding(innerpadding),
+            navController = navController
         )
 
 

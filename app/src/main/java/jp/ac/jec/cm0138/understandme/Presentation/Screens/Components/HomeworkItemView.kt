@@ -39,14 +39,15 @@ import jp.ac.jec.cm0138.understandme.customTheme.NotoSansJP
 
 @Composable
 fun HomeworkItemView(
-    id: String,
     title: String,
     dueDate: String?,
     homeworkState: HomeworkState,
+    onTap: () -> Unit = {},
+    onAnswerClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Surface(
-        onClick = {},
+        onClick = onTap,
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 2.dp,
         modifier = modifier
@@ -94,7 +95,7 @@ fun HomeworkItemView(
                 val brush = Brush.horizontalGradient(
                     listOf<Color>(
                         MyAppTheme.colors.purple,
-                        MyAppTheme.colors.blue
+                        MyAppTheme.colors.lightBlue
                     )
                 )
 
@@ -128,20 +129,23 @@ fun HomeworkItemView(
             }
 
             if (homeworkState == HomeworkState.questionGenerated) {
-                Surface() {
+                Surface(
+                    onClick = onAnswerClicked,
+                    shape = RoundedCornerShape(20.dp),
+                    color = MyAppTheme.colors.accent,
+                    modifier = Modifier
+                        .padding(10.dp)
+                ) {
                     Text(
                         text = "回答",
                         style = TextStyle(
                             fontFamily = NotoSansJP,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
+                            color = Color.White
                         ),
                         modifier = Modifier
-                            .padding(10.dp)
-                            .clip(RoundedCornerShape(40.dp))
-                            .background(Color.Blue.copy(alpha = 0.3f))
-                            .padding(horizontal = 10.dp)
-                            .padding(13.dp)
+                            .padding(horizontal = 20.dp, vertical = 15.dp)
                     )
                 }
             }
@@ -171,7 +175,6 @@ fun LottieView(
 fun HomeworkItemPreview() {
     Scaffold { innerPadding ->
         HomeworkItemView(
-            id = "",
             title = "課題名",
             dueDate = null,
             homeworkState = HomeworkState.questionGenerated,

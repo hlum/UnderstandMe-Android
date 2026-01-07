@@ -13,4 +13,8 @@ class TestAuthRepository() : AuthRepository {
     override fun getCurrentUser(): FirebaseUser {
         TODO("Not yet implemented")
     }
+
+    override fun logOut() {
+        // Do nothing
+    }
 }

@@ -2,12 +2,16 @@ package jp.ac.jec.cm0138.understandme.UseCase
 
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.ResultRepository
 import javax.inject.Inject
 
 class HomeworkUseCase @Inject constructor(
-    private val homeworkRepository: HomeworkRepository
+    private val homeworkRepository: HomeworkRepository,
+    private val projectRepository: ProjectRepository,
+    private val resultRepository: ResultRepository
 ) {
-    suspend fun fetchHomeworks(studentID: String, homeworkID: String): HomeworkWithStatus {
+    suspend fun fetchHomework(studentID: String, homeworkID: String): HomeworkWithStatus {
         return homeworkRepository.fetchHomework(homeworkID, studentID)
     }
 
@@ -21,6 +25,15 @@ class HomeworkUseCase @Inject constructor(
 
     suspend fun retryQuestionGeneration(homeworkID: String, studentID: String) {
         homeworkRepository.retryQuestionGeneration(homeworkID, studentID)
+    }
+
+
+    suspend fun uploadProject(
+        studentID: String,
+        homeworkID: String,
+        projectLink: String
+    ) {
+        projectRepository.uploadProject(studentID, homeworkID, projectLink)
     }
 
 

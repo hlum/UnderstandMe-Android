@@ -86,9 +86,14 @@ class LoginScreenViewModel @Inject constructor(
                 studentCode = studentCode,
                 majorCode = className,
                 admissionYear = admissionYear,
-                photoURL = user.photoUrl.toString()
+                photoURL = if(user.photoUrl != null) user.photoUrl.toString() else null
             )
+
+        try {
             userDataUseCase.registerUserIfNotExists(userData)
+        } catch(e: Exception) {
+            Log.e("LoginScreenViewModel", "registerUser: ユーザーデータの登録に失敗しました。再試行します。", e)
+        }
 
     }
 

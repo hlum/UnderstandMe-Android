@@ -10,6 +10,7 @@ data class MyColors(
     val accent: Color,
     val secAccent: Color,
     val purple: Color,
+    val lightBlue: Color,
     val blue: Color
 )
 
@@ -19,9 +20,10 @@ val darkColor = MyColors(
     secondary = Color(0xFF7C7C7C),
     background = Color(0xFFFFFFFF),
     accent = Color(0xFF5856D6),
-    secAccent = Color(0xFF08F2A0),
+    secAccent = Color(0xFF36BF57),
     purple = Color(0xFFE6CBF5),
-    blue = Color(0xFFBFD7FE)
+    lightBlue = Color(0xFFBFD7FE),
+    blue = Color(0xFF0883F5)
 )
 
 val lightColor = MyColors(
@@ -29,9 +31,10 @@ val lightColor = MyColors(
     secondary = Color(0xFF7C7C7C),
     background = Color(0xFFFFFFFF),
     accent = Color(0xFF5856D6),
-    secAccent = Color(0xFF08F2A0),
+    secAccent = Color(0xFF36BF57),
     purple = Color(0xFFE6CBF5),
-    blue = Color(0xFFBFD7FE)
+    lightBlue = Color(0xFFBFD7FE),
+    blue = Color(0xFF0883F5)
 )
 
 val LocalMyColors = staticCompositionLocalOf {

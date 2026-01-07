@@ -49,7 +49,7 @@ class HomeworkListScreenViewModel @Inject constructor(
                     homeworkRepository.fetchHomeworks(currentUser.uid)
                 }
                 allHomeworks = homeworks
-                applyFilters()
+                applyFiltersAsync()
             } catch (e: Exception) {
 
             } finally {
@@ -60,37 +60,45 @@ class HomeworkListScreenViewModel @Inject constructor(
 
     fun handleFilterChange(option: HomeworkFilterOption) {
         selectedFilterOption = option
-        applyFilters()
+        applyFiltersAsync()
     }
 
     fun handleSearchTextChange(text: String) {
         searchText = text
-        applyFilters()
+        applyFiltersAsync()
     }
 
-    /** フィルター + 検索を一括適用 */
-    private fun applyFilters() {
+
+    fun applyFiltersAsync() {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.Default) {
+                applyFiltersInternal()
+            }
+            filteredHomeworks = result
+        }
+    }
+
+    private fun applyFiltersInternal(): List<HomeworkWithStatus> {
         var result = allHomeworks
 
-        // ① State フィルター
+        // ① State filter
         result = when (val option = selectedFilterOption) {
             is HomeworkFilterOption.All -> result
             is HomeworkFilterOption.State ->
                 result.filter { it.submissionState == option.homeworkState }
         }
 
-        // ② 検索フィルター
+        // ② Search filter
         if (searchText.isNotBlank()) {
             result = result.filter {
                 it.title.contains(searchText, ignoreCase = true)
             }
         }
 
-        // ③ ソート適用
-        result = sortHomeworks(result, selectedFilterOption)
-
-        filteredHomeworks = result
+        // ③ Sort
+        return sortHomeworks(result, selectedFilterOption)
     }
+
 
 
     private fun sortHomeworks(
