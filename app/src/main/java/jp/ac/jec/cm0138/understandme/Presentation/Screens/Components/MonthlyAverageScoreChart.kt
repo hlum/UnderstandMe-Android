@@ -42,6 +42,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberEnd
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
 import com.patrykandpatrick.vico.compose.common.fill
@@ -50,6 +51,8 @@ import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.common.Fill
 import jp.ac.jec.cm0138.understandme.Entity.ResultData
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
@@ -86,9 +89,13 @@ fun MonthlyAverageScoreChart(
     LaunchedEffect(monthlyData) {
         modelProducer.runTransaction {
             columnSeries {
-                // Add scores with a hidden max value point to force Y-axis to 100
+                // Main data series
                 val scores = monthlyData.map { it.averageScore.toDouble() }
                 series(scores)
+            }
+            lineSeries {
+                // Invisible line series at 100 to force Y-axis max
+                series(monthlyData.indices.map { 100.0 })
             }
         }
     }
@@ -135,6 +142,11 @@ fun MonthlyAverageScoreChart(
                         CartesianChartHost(
                             chart = rememberCartesianChart(
                                 rememberColumnCartesianLayer(),
+                                rememberLineCartesianLayer(
+                                    lineProvider = LineCartesianLayer.LineProvider.series(
+                                        LineCartesianLayer.Line(fill = LineCartesianLayer.LineFill.single(fill(Color.Transparent)))
+                                    )
+                                ),
                                 endAxis = VerticalAxis.rememberEnd(
                                     itemPlacer = VerticalAxis.ItemPlacer.count({ 6 }),
                                     label = rememberTextComponent(color = Color.Gray),
