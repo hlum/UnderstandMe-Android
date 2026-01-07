@@ -35,7 +35,6 @@ data class RESULT_CONFIRMATION_ROUTE(
     val homeworkID: String
 )
 
-
 enum class AnswerMode {
     ANSWER,
     REVIEW

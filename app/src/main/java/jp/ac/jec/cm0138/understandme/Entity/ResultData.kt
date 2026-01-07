@@ -6,6 +6,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.*
 
 @Serializable
@@ -18,7 +21,23 @@ data class ResultData(
     val score: Int,
     @SerialName("evaluated_at") val evaluatedAt: String
 ) {
+    val evaluatedAtDate: LocalDateTime
+        get() = try {
+            LocalDateTime.parse(
+                evaluatedAt,
+                DATE_FORMATTER
+            )
+        } catch (e: DateTimeParseException) {
+            throw IllegalArgumentException("Invalid date format: $evaluatedAt", e)
+        }
+
     companion object {
+        private val DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+
+
+
         // Function to create dummy data
         fun getDummy(): ResultData {
             return ResultData(

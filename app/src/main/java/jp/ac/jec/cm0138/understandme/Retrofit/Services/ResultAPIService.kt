@@ -11,7 +11,6 @@ interface ResultAPIService {
     @GET("result/get_result.php")
     suspend fun fetchResults(
         @Query("user_id") userID: String,
-        @Query("year") year: Int
     ): Response<APIResponse<List<ResultData>>>
 
     @GET("result/get_result_userID_homeworkID.php")

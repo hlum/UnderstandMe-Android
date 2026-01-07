@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.ProfileScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ResultConfirmationScreen
 
 @Composable
@@ -90,7 +92,10 @@ fun AppNavigation(
         }
 
         composable<PROFILE_ROUTE> { entry ->
-            Text("Profile Screen")
+            ProfileScreen(
+                modifier = Modifier.padding(paddingValues),
+                navController = navController
+            )
         }
 
 
