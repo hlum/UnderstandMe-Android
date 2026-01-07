@@ -30,6 +30,11 @@ data class ANSWER_QUESTIONS_ROUTE(
     val mode: AnswerMode
 )
 
+@Serializable
+data class RESULT_CONFIRMATION_ROUTE(
+    val homeworkID: String
+)
+
 
 enum class AnswerMode {
     ANSWER,

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.BeyondBoundsLayout.LayoutDirection
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +19,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.ResultConfirmationScreen
 
 @Composable
 fun AppNavigation(
@@ -113,6 +115,15 @@ fun AppNavigation(
                 mode = mode,
                 navController = navController,
                 modifier = Modifier.padding(paddingValues)
+            )
+        }
+
+        composable<RESULT_CONFIRMATION_ROUTE> { entry ->
+            val homeworkID = entry.arguments?.getString("homeworkID") ?: ""
+            ResultConfirmationScreen(
+                homeworkID = homeworkID,
+                modifier = Modifier.padding(paddingValues),
+                navController = navController
             )
         }
     }

@@ -1,7 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +51,7 @@ import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.RESULT_CONFIRMATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.LottieView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkDetailScreenViewModel
@@ -155,7 +155,9 @@ fun HomeworkDetailScreen(
                             .fillMaxWidth()
                             .height(55.dp)
                             .padding(horizontal = 10.dp),
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(RESULT_CONFIRMATION_ROUTE(homeworkID = homeworkID))
+                        },
                         buttonText = "回答履歴を見る"
                     )
                 }
