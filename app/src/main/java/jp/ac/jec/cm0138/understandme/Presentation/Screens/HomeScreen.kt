@@ -82,7 +82,10 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            ClassListBanner(classes = viewModel.classList)
+            ClassListBanner(
+                navController = navController,
+                classes = viewModel.classList
+            )
             HomeworkListBanner(navController, homeworks = viewModel.homeworks)
         }
     }
@@ -134,6 +137,7 @@ fun HomeworkListBanner(
 
 @Composable
 fun ClassListBanner(
+    navController: NavController,
     classes: List<Class>,
     modifier: Modifier = Modifier
 ) {
@@ -166,6 +170,7 @@ fun ClassListBanner(
                     teacherName = classItem.teacherName,
                     showIcon = false,
                     height = 80.dp,
+                    navController = navController,
                     modifier = Modifier
                         .width(200.dp)
                         .padding(5.dp)

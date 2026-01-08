@@ -35,6 +35,7 @@ import jp.ac.jec.cm0138.understandme.Entity.HomeworkFilterOption
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkListScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
@@ -44,16 +45,24 @@ import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 fun HomeworkListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    classID: String? = null,
+    className: String? = null,
     viewModel: HomeworkListScreenViewModel = hiltViewModel()
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.loadHomeworks()
+        if (classID != null) {
+            viewModel.loadHomeworksForClass(classID)
+        } else {
+            viewModel.loadHomeworks()
+        }
     }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopSearchBarAndFilters(
+                className = className,
+                navController = navController,
                 searchText = viewModel.searchText,
                 selectedFilterOption = viewModel.selectedFilterOption,
                 onFilterOptionSelected = { viewModel.handleFilterChange(it) },
@@ -89,6 +98,8 @@ fun HomeworkListScreen(
 @Composable
 fun TopSearchBarAndFilters(
     modifier: Modifier = Modifier,
+    className: String?,
+    navController: NavController,
     searchText: String,
     selectedFilterOption: HomeworkFilterOption,
     onFilterOptionSelected: (HomeworkFilterOption) -> Unit,
@@ -100,11 +111,23 @@ fun TopSearchBarAndFilters(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "課題一覧",
-            modifier = Modifier,
-            style = CustomTypography.header
-        )
+
+        if(className != null) {
+            HeaderAndBackButton(
+                headerTitle = "$className の課題",
+                onBackButtonClicked = { navController.popBackStack() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+        } else {
+            Text(
+                text = "課題一覧",
+                modifier = Modifier,
+                style = CustomTypography.header
+            )
+        }
+
 
         CustomSearchBar(
             value = searchText,

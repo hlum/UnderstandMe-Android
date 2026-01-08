@@ -4,14 +4,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.BeyondBoundsLayout.LayoutDirection
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -85,9 +81,22 @@ fun AppNavigation(
             )
         }
 
-        composable<HOMEWORKS_ROUTE> { entry ->
+
+        composable<HOMEWORK_ENTRY_ROUTE> {
+            HomeworkListScreen(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+
+        composable<HOMEWORKS_FOR_CLASS_ROUTE> { entry ->
+            val classID = entry.arguments?.getString("classID")
+            val className = entry.arguments?.getString("className")
+
             HomeworkListScreen(
                 modifier = Modifier.padding(paddingValues),
+                classID = classID,
+                className = className,
                 navController = navController,
             )
         }

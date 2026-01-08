@@ -56,6 +56,7 @@ fun ClassListScreen(
                     className = classItem.name,
                     teacherName = classItem.teacherName,
                     showIcon = true,
+                    navController = navController,
                     modifier = Modifier.padding(10.dp)
                 )
             }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,6 +27,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORKS_FOR_CLASS_ROUTE
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 
 @Composable
@@ -33,6 +37,7 @@ fun ClassItemView(
     classID: String,
     className: String,
     teacherName: String,
+    navController: NavController,
     showIcon: Boolean = true,
     height: Dp = 90.dp,
     modifier: Modifier = Modifier
@@ -53,7 +58,7 @@ fun ClassItemView(
     val backgroundColor = remember { colors.random() }
     val firstChar = className.firstOrNull()?.uppercase() ?: ""
 
-    Row(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
             .height(height)
@@ -66,55 +71,64 @@ fun ClassItemView(
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(16.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Start
+        onClick = {
+            navController.navigate(HOMEWORKS_FOR_CLASS_ROUTE(
+                classID = classID, className = className
+            ))
+        }
     ) {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start
+        ) {
 
-        if (showIcon) {
-            // Icon Box
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .background(
-                        color = backgroundColor,
-                        shape = RoundedCornerShape(10.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = firstChar,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Black,
-                        color = Color.White
+            if (showIcon) {
+                // Icon Box
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(
+                            color = backgroundColor,
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = firstChar,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
                     )
-                )
+
+                }
+
+                Spacer(modifier = Modifier.width(20.dp))
 
             }
 
-            Spacer(modifier = Modifier.width(20.dp))
 
-        }
+            // Text Content
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = className,
+                    style = CustomTypography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
+                Spacer(modifier = Modifier.height(4.dp))
 
-        // Text Content
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = className,
-                style = CustomTypography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = teacherName,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-            )
+                Text(
+                    text = teacherName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            }
         }
     }
 }
@@ -124,6 +138,7 @@ fun ClassItemView(
 @Composable
 fun ClassCellPreview() {
     Scaffold { innerPadding ->
+        val navController = rememberNavController()
         ClassItemView(
             modifier = Modifier
                 .padding(innerPadding)
@@ -131,6 +146,7 @@ fun ClassCellPreview() {
             classID = "",
             className = "セキュアーコーディング",
             teacherName = "先生名",
+            navController = navController,
             showIcon = true
         )
     }
