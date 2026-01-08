@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +38,6 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineCom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLineComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberEnd
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
@@ -53,7 +50,6 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
-import com.patrykandpatrick.vico.core.common.Fill
 import jp.ac.jec.cm0138.understandme.Entity.ResultData
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import java.time.LocalDateTime
@@ -112,72 +108,55 @@ fun MonthlyAverageScoreChart(
             color = Color.Transparent
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                if (monthlyData.isEmpty()) {
-                    // Empty state
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color.Gray.copy(alpha = 0.7f),
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "平均スコアのデータはありません。",
-                            color = Color.Gray.copy(alpha = 0.7f),
-                            fontSize = 16.sp
-                        )
-                    }
-                } else {
-                    // Chart with padding for year navigation
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 40.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
-                    ) {
-                        CartesianChartHost(
-                            chart = rememberCartesianChart(
-                                rememberColumnCartesianLayer(),
-                                rememberLineCartesianLayer(
-                                    lineProvider = LineCartesianLayer.LineProvider.series(
-                                        LineCartesianLayer.Line(fill = LineCartesianLayer.LineFill.single(fill(Color.Transparent)))
+                // Chart with padding for year navigation
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 40.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
+                ) {
+                    CartesianChartHost(
+                        chart = rememberCartesianChart(
+                            rememberColumnCartesianLayer(),
+                            rememberLineCartesianLayer(
+                                lineProvider = LineCartesianLayer.LineProvider.series(
+                                    LineCartesianLayer.Line(
+                                        fill = LineCartesianLayer.LineFill.single(
+                                            fill(Color.Transparent)
+                                        )
                                     )
-                                ),
-                                endAxis = VerticalAxis.rememberEnd(
-                                    itemPlacer = VerticalAxis.ItemPlacer.count({ 6 }),
-                                    label = rememberTextComponent(color = Color.Gray),
-                                    valueFormatter = { _, value, _ ->
-                                        value.toInt().toString()
-                                    },
-                                    line = rememberAxisLineComponent(
-                                        fill = fill(Color.Gray)
-                                    ),
-                                    guideline = rememberAxisGuidelineComponent(
-                                        fill = fill(Color.Gray.copy(alpha = 0.5f)),
-                                        shape = dashedShape()
-                                    )
-                                ),
-                                bottomAxis = HorizontalAxis.rememberBottom(
-                                    label = rememberTextComponent(color = Color.Gray),
-                                    valueFormatter = { _, value, _ ->
-                                        val monthIndex = value.toInt()
-                                        if (monthIndex in monthlyData.indices) {
-                                            "${monthlyData[monthIndex].month.month.value}月"
-                                        } else ""
-                                    },
-                                    guideline = null
                                 )
                             ),
-                            modelProducer = modelProducer,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-                    }
+                            endAxis = VerticalAxis.rememberEnd(
+                                itemPlacer = VerticalAxis.ItemPlacer.count({ 6 }),
+                                label = rememberTextComponent(color = Color.Gray),
+                                valueFormatter = { _, value, _ ->
+                                    value.toInt().toString()
+                                },
+                                line = rememberAxisLineComponent(
+                                    fill = fill(Color.Gray)
+                                ),
+                                guideline = rememberAxisGuidelineComponent(
+                                    fill = fill(Color.Gray.copy(alpha = 0.5f)),
+                                    shape = dashedShape()
+                                )
+                            ),
+                            bottomAxis = HorizontalAxis.rememberBottom(
+                                label = rememberTextComponent(color = Color.Gray),
+                                valueFormatter = { _, value, _ ->
+                                    val monthIndex = value.toInt()
+                                    if (monthIndex in monthlyData.indices) {
+                                        "${monthlyData[monthIndex].month.month.value}月"
+                                    } else ""
+                                },
+                                guideline = null
+                            )
+                        ),
+                        modelProducer = modelProducer,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
                 }
+
 
                 // Year navigation overlay at top
                 Row(
@@ -218,25 +197,6 @@ fun MonthlyAverageScoreChart(
                     }
                 }
             }
-        }
-
-        // Legend
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp, bottom = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .background(accentColor, CircleShape)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = "平均スコア",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }

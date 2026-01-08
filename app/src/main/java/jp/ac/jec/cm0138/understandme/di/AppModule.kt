@@ -6,9 +6,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import jp.ac.jec.cm0138.understandme.BuildConfig
 import jp.ac.jec.cm0138.understandme.LollipopResultRepository.Impl.LollipopResultRepository
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.AverageScoreForClassItem
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AnswerRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
@@ -17,12 +19,14 @@ import jp.ac.jec.cm0138.understandme.Repository.Abstract.ResultRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAnswerRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.AverageScoreAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
@@ -108,6 +112,15 @@ object AppModule {
         return LollipopAnswerRepository(answerAPIService = answerAPIService)
     }
 
+
+    @Provides
+    @Singleton
+    fun provideAverageScoreRepository(
+        averageScoreAPIService: AverageScoreAPIService
+    ): AverageScoreRepository {
+        return LollipopAverageScoreRepository(averageScoreAPIService = averageScoreAPIService)
+    }
+
     @Provides
     @Singleton
     fun provideUserAPIService(
@@ -166,6 +179,14 @@ object AppModule {
         retrofit: Retrofit
     ): AnswerAPIService {
         return retrofit.create(AnswerAPIService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAverageScoreAPIService(
+        retrofit: Retrofit
+    ): AverageScoreAPIService {
+        return retrofit.create(AverageScoreAPIService::class.java)
     }
 
 

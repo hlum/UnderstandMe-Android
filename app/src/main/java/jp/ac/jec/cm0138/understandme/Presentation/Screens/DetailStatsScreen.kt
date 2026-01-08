@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,36 +28,45 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
+import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.DetailStatsScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 
 @Composable
 fun DetailStatsScreen(
-    navController: NavController, modifier: Modifier = Modifier
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    viewModel: DetailStatsScreenViewModel = hiltViewModel()
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        item(1) {
-            HeaderAndBackButton(
-                headerTitle = "詳細統計",
-                onBackButtonClicked = { navController.popBackStack() },
-                modifier = Modifier.padding(horizontal = 10.dp)
-            )
-        }
-        items(6) {
-            AverageScoreForClassItem(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                className = "数学",
-                averageScore = 85,
-                homeworkCompleted = 8,
-                totalHomework = 10
-            )
+
+    LaunchedEffect(Unit) {
+        viewModel.loadAverageScoresPerClass()
+    }
+    Column(modifier = modifier.fillMaxSize()) {
+        HeaderAndBackButton(
+            headerTitle = "詳細統計",
+            onBackButtonClicked = { navController.popBackStack() },
+            modifier = Modifier.padding(horizontal = 10.dp)
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(items = viewModel.averageScoresPerClass) {
+                AverageScoreForClassItem(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                    className = it.className,
+                    averageScore = it.averageScore,
+                    homeworkCompleted = it.finishedHomeworkCount,
+                    totalHomework = it.totalHomeworkCount
+                )
+            }
         }
     }
 
