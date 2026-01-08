@@ -133,19 +133,50 @@ fun HomeworkListBanner(
         )
     }
 
-
-    LazyColumn(
-
-    ) {
-        items(items = homeworks, key = { it.id }) { homework ->
-            HomeworkItemView(
-                title = homework.title,
-                dueDate = homework.dueDateString,
-                homeworkState = homework.submissionState,
-                onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
-                onAnswerClicked = { navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))},
-                modifier = Modifier.padding(horizontal = 10.dp)
+    if (homeworks.isEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.LightGray.copy(alpha = 0.15f))
+                .padding(horizontal = 30.dp)
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle,
+                contentDescription = null,
+                tint = Color.LightGray,
+                modifier = Modifier.size(48.dp)
             )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = "締切が近い課題はありません",
+                style = TextStyle(
+                    fontFamily = NotoSansJP,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.LightGray
+            )
+        }
+    } else {
+        LazyColumn(
+
+        ) {
+            items(items = homeworks, key = { it.id }) { homework ->
+                HomeworkItemView(
+                    title = homework.title,
+                    dueDate = homework.dueDateString,
+                    homeworkState = homework.submissionState,
+                    onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
+                    onAnswerClicked = { navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))},
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+            }
         }
     }
 }
