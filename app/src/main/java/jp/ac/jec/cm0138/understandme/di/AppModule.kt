@@ -28,6 +28,7 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AverageScoreAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.FCMTokenAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.QuestionWithChoicesAPIService
@@ -187,6 +188,15 @@ object AppModule {
         retrofit: Retrofit
     ): AverageScoreAPIService {
         return retrofit.create(AverageScoreAPIService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFCMTokenAPIService(
+        retrofit: Retrofit
+    ): FCMTokenAPIService {
+        return retrofit.create(FCMTokenAPIService::class.java)
     }
 
 

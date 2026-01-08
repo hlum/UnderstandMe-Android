@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.ViewModels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,6 +85,11 @@ fun logout() {
                 isLoading = false
             }
         }
+    }
+
+
+    fun saveFCMToken() {
+        // TODO: Implement saving FCM token when the homeScreen is loaded
     }
 
     private suspend fun fetchCurrentUser(): UserData {

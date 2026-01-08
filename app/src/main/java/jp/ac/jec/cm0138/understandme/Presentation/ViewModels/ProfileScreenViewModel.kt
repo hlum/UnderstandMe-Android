@@ -79,6 +79,11 @@ class ProfileScreenViewModel @Inject constructor(
         calculateAverageScores()
     }
 
+
+    fun deleteFCMToken() {
+        // TODO: Implement FCM token deletion if necessary. Use the userDataUseCase.deleteFCMToken function.
+    }
+
     private suspend fun loadProfileDataInternally() = coroutineScope {
 
         val currentUser = authRepository.getCurrentUser()
@@ -140,6 +145,7 @@ class ProfileScreenViewModel @Inject constructor(
     fun signOut() {
         try {
             isLoading = true
+            deleteFCMToken()
             authRepository.logOut()
         } catch (e: Exception) {
             Log.e(TAG, "Error signing out: ${e.message}")
