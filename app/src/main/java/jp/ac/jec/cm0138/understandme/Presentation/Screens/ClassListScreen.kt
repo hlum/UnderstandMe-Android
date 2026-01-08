@@ -1,10 +1,13 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,19 +49,30 @@ fun ClassListScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-        ) {
-            items(items = viewModel.classes, key = { it.id }) { classItem ->
-                ClassItemView(
-                    classID = classItem.id,
-                    className = classItem.name,
-                    teacherName = classItem.teacherName,
-                    showIcon = true,
-                    navController = navController,
-                    modifier = Modifier.padding(10.dp)
-                )
+        if (viewModel.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
+                items(items = viewModel.classes, key = { it.id }) { classItem ->
+                    ClassItemView(
+                        classID = classItem.id,
+                        className = classItem.name,
+                        teacherName = classItem.teacherName,
+                        showIcon = true,
+                        navController = navController,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
             }
         }
 

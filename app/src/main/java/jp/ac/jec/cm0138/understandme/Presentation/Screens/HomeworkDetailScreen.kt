@@ -84,7 +84,7 @@ fun HomeworkDetailScreen(
         val homework = viewModel.homework
         val className = viewModel.className
 
-        if (homework == null || className == null) {
+        if (viewModel.isLoading || homework == null || className == null) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

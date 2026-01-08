@@ -3,7 +3,9 @@ package jp.ac.jec.cm0138.understandme.Presentation.Screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -71,24 +74,35 @@ fun HomeworkListScreen(
             )
         }
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(it)
-        ) {
-            items(items = viewModel.filteredHomeworks, key = { it.id }) { homework ->
-                HomeworkItemView(
-                    title = homework.title,
-                    dueDate = homework.dueDateString,
-                    homeworkState = homework.submissionState,
-                    onTap = {
-                        navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
-                    },
-                    onAnswerClicked = {
-                        navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                )
+        if (viewModel.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(it)
+            ) {
+                items(items = viewModel.filteredHomeworks, key = { it.id }) { homework ->
+                    HomeworkItemView(
+                        title = homework.title,
+                        dueDate = homework.dueDateString,
+                        homeworkState = homework.submissionState,
+                        onTap = {
+                            navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
+                        },
+                        onAnswerClicked = {
+                            navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                    )
+                }
             }
         }
     }
