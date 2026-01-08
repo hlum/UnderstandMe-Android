@@ -3,16 +3,23 @@ package jp.ac.jec.cm0138.understandme.Presentation.Screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,8 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +44,7 @@ import jp.ac.jec.cm0138.understandme.Entity.HomeworkFilterOption
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkListScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
@@ -44,16 +54,24 @@ import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 fun HomeworkListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    classID: String? = null,
+    className: String? = null,
     viewModel: HomeworkListScreenViewModel = hiltViewModel()
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.loadHomeworks()
+        if (classID != null) {
+            viewModel.loadHomeworksForClass(classID)
+        } else {
+            viewModel.loadHomeworks()
+        }
     }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopSearchBarAndFilters(
+                className = className,
+                navController = navController,
                 searchText = viewModel.searchText,
                 selectedFilterOption = viewModel.selectedFilterOption,
                 onFilterOptionSelected = { viewModel.handleFilterChange(it) },
@@ -62,24 +80,59 @@ fun HomeworkListScreen(
             )
         }
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(it)
-        ) {
-            items(items = viewModel.filteredHomeworks, key = { it.id }) { homework ->
-                HomeworkItemView(
-                    title = homework.title,
-                    dueDate = homework.dueDateString,
-                    homeworkState = homework.submissionState,
-                    onTap = {
-                        navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
-                    },
-                    onAnswerClicked = {
-                        navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
+        if (viewModel.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (viewModel.filteredHomeworks.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Assignment,
+                    contentDescription = null,
+                    tint = Color.LightGray,
+                    modifier = Modifier.size(64.dp)
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "課題がありません",
+                    style = CustomTypography.body.copy(
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    ),
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(it)
+            ) {
+                items(items = viewModel.filteredHomeworks, key = { it.id }) { homework ->
+                    HomeworkItemView(
+                        title = homework.title,
+                        dueDate = homework.dueDateString,
+                        homeworkState = homework.submissionState,
+                        onTap = {
+                            navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
+                        },
+                        onAnswerClicked = {
+                            navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -89,6 +142,8 @@ fun HomeworkListScreen(
 @Composable
 fun TopSearchBarAndFilters(
     modifier: Modifier = Modifier,
+    className: String?,
+    navController: NavController,
     searchText: String,
     selectedFilterOption: HomeworkFilterOption,
     onFilterOptionSelected: (HomeworkFilterOption) -> Unit,
@@ -100,11 +155,23 @@ fun TopSearchBarAndFilters(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "課題一覧",
-            modifier = Modifier,
-            style = CustomTypography.header
-        )
+
+        if(className != null) {
+            HeaderAndBackButton(
+                headerTitle = "$className の課題",
+                onBackButtonClicked = { navController.popBackStack() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+        } else {
+            Text(
+                text = "課題一覧",
+                modifier = Modifier,
+                style = CustomTypography.header
+            )
+        }
+
 
         CustomSearchBar(
             value = searchText,

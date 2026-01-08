@@ -5,10 +5,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,10 +22,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -79,11 +83,25 @@ fun HomeScreen(
             )
         }
     ) {
-        Column(
-            modifier = Modifier.padding(it)
-        ) {
-            ClassListBanner(classes = viewModel.classList)
-            HomeworkListBanner(navController, homeworks = viewModel.homeworks)
+        if (viewModel.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier.padding(it)
+            ) {
+                ClassListBanner(
+                    navController = navController,
+                    classes = viewModel.classList
+                )
+                HomeworkListBanner(navController, homeworks = viewModel.homeworks)
+            }
         }
     }
 }
@@ -115,25 +133,57 @@ fun HomeworkListBanner(
         )
     }
 
-
-    LazyColumn(
-
-    ) {
-        items(items = homeworks, key = { it.id }) { homework ->
-            HomeworkItemView(
-                title = homework.title,
-                dueDate = homework.dueDateString,
-                homeworkState = homework.submissionState,
-                onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
-                onAnswerClicked = { navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))},
-                modifier = Modifier.padding(horizontal = 10.dp)
+    if (homeworks.isEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.LightGray.copy(alpha = 0.15f))
+                .padding(horizontal = 30.dp)
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle,
+                contentDescription = null,
+                tint = Color.LightGray,
+                modifier = Modifier.size(48.dp)
             )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = "締切が近い課題はありません",
+                style = TextStyle(
+                    fontFamily = NotoSansJP,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.LightGray
+            )
+        }
+    } else {
+        LazyColumn(
+
+        ) {
+            items(items = homeworks, key = { it.id }) { homework ->
+                HomeworkItemView(
+                    title = homework.title,
+                    dueDate = homework.dueDateString,
+                    homeworkState = homework.submissionState,
+                    onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
+                    onAnswerClicked = { navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))},
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
 fun ClassListBanner(
+    navController: NavController,
     classes: List<Class>,
     modifier: Modifier = Modifier
 ) {
@@ -166,6 +216,7 @@ fun ClassListBanner(
                     teacherName = classItem.teacherName,
                     showIcon = false,
                     height = 80.dp,
+                    navController = navController,
                     modifier = Modifier
                         .width(200.dp)
                         .padding(5.dp)

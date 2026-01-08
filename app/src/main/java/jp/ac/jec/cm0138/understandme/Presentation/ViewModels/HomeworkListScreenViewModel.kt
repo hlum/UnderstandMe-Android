@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.ViewModels
 
+import android.util.Log
 import android.view.View
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,27 @@ class HomeworkListScreenViewModel @Inject constructor(
         private set
 
 
+    fun loadHomeworksForClass(classID: String) {
+        viewModelScope.launch {
+            isLoading = true
+
+            try {
+                val homeworks = withContext(Dispatchers.IO) {
+                    val currentUser = authRepository.getCurrentUser()
+                    homeworkRepository.fetchHomeworksFromClass(
+                        studentID = currentUser.uid,
+                        classID = classID
+                    )
+                }
+                allHomeworks = homeworks
+                applyFiltersAsync()
+            } catch (e: Exception) {
+                Log.e("HomeworkListScreenVM", "Error loading homeworks for class", e)
+            } finally {
+                isLoading = false
+            }
+        }
+    }
     fun loadHomeworks() {
         viewModelScope.launch {
             isLoading = true

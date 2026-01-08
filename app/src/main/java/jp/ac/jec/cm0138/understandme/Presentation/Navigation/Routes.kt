@@ -12,7 +12,13 @@ data object HOME_ROUTE
 data object CLASSES_ROUTE
 
 @Serializable
-data object HOMEWORKS_ROUTE
+data class HOMEWORKS_FOR_CLASS_ROUTE (
+    val className: String?,
+    val classID: String?
+)
+
+@Serializable
+data object HOMEWORK_ENTRY_ROUTE
 
 @Serializable
 data object PROFILE_ROUTE
@@ -64,7 +70,7 @@ val bottomNavItems = listOf(
         label = "科目一覧"
     ),
     BottomNavItem(
-        route = HOMEWORKS_ROUTE::class.qualifiedName!!,
+        route = HOMEWORK_ENTRY_ROUTE::class.qualifiedName!!,
         icon = R.drawable.list_bullet_clipboard_fill,
         label = "課題一覧"
     ),
