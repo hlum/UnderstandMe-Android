@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
@@ -45,6 +47,7 @@ class HomeScreenViewModel @Inject constructor(
 
     var currentUser by mutableStateOf<UserData?>(null)
 
+    private var hasUpdatedFCMToken = false
 
 
 fun logout() {
@@ -88,8 +91,29 @@ fun logout() {
     }
 
 
-    fun saveFCMToken() {
-        // TODO: Implement saving FCM token when the homeScreen is loaded
+    fun saveFCMToken(context: Context) {
+        if (hasUpdatedFCMToken) return
+
+        viewModelScope.launch {
+            try {
+                val token = withContext(Dispatchers.IO) {
+                    FirebaseMessaging.getInstance().token.await()
+                }
+                val userID = authRepository.getCurrentUser().uid
+
+                withContext(Dispatchers.IO) {
+                    userDataUseCase.updateFCMToken(
+                        context = context,
+                        userID = userID,
+                        fcmToken = token
+                    )
+                }
+                hasUpdatedFCMToken = true
+                Log.d(TAG, "FCM token updated successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update FCM token", e)
+            }
+        }
     }
 
     private suspend fun fetchCurrentUser(): UserData {

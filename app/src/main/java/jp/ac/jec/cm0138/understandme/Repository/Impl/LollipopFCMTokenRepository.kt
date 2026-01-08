@@ -19,7 +19,7 @@ class LollipopFCMTokenRepository @Inject constructor(
         val response = fcmTokenAPIService.updateFCMToken(
             request = UpdateFCMTokenRequest(
                 user_id = userID,
-                device_id = deviceType,
+                device_id = deviceID,
                 fcm_token = fcmToken,
                 device_type = deviceType,
             )

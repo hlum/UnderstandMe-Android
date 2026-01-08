@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 
 @Serializable
@@ -28,7 +29,7 @@ interface FCMTokenAPIService {
         @Body request: UpdateFCMTokenRequest
     ): Response<APIResponse<Unit>>
 
-    @DELETE("user/delete_fcm_token.php")
+    @HTTP(method = "DELETE", path ="user/delete_fcm_token.php", hasBody = true)
     suspend fun deleteFCMToken(
         @Body request: DeleteFCMTokenRequest
     ): Response<APIResponse<Unit>>

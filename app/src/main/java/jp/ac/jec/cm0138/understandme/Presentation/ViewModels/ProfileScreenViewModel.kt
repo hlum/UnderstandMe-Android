@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.ViewModels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,7 @@ class ProfileScreenViewModel @Inject constructor(
             isLoading = true
 
             try {
-               loadProfileDataInternally()
+                loadProfileDataInternally()
                 calculateAverageScores()
                 calculateAverageScoreOfAllTime()
             } catch (e: Exception) {
@@ -80,8 +81,16 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
 
-    fun deleteFCMToken() {
-        // TODO: Implement FCM token deletion if necessary. Use the userDataUseCase.deleteFCMToken function.
+    private suspend fun deleteFCMToken(context: Context) {
+        try {
+            val userID = authRepository.getCurrentUser().uid
+            withContext(Dispatchers.IO) {
+                userDataUseCase.deleteFCMToken(context = context, userID = userID)
+            }
+            Log.d(TAG, "FCM token deleted successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to delete FCM token", e)
+        }
     }
 
     private suspend fun loadProfileDataInternally() = coroutineScope {
@@ -142,15 +151,17 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
 
-    fun signOut() {
-        try {
-            isLoading = true
-            deleteFCMToken()
-            authRepository.logOut()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error signing out: ${e.message}")
-        } finally {
-            isLoading = false
+    fun signOut(context: Context) {
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                deleteFCMToken(context)
+                authRepository.logOut()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error signing out: ${e.message}")
+            } finally {
+                isLoading = false
+            }
         }
     }
 

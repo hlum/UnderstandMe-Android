@@ -69,9 +69,11 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.loadData()
+        viewModel.saveFCMToken(context)
     }
 
     Scaffold(

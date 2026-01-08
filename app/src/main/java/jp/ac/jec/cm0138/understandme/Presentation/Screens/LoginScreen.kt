@@ -37,6 +37,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOME_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AuthState
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.LoginScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.FCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.TestRepo.TestAuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.UserDataUseCase
@@ -143,6 +144,16 @@ class PreviewUserDataRepository() : UserDataRepository {
     }
 }
 
+class PreviewFCMTokenRepository() : FCMTokenRepository {
+    override suspend fun saveOrUpdateToken(userID: String, deviceID: String, deviceType: String, fcmToken: String) {
+        return
+    }
+
+    override suspend fun deleteFcmToken(userID: String, deviceID: String) {
+        return
+    }
+}
+
 @SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
@@ -153,7 +164,10 @@ fun LoginScreenPreview() {
         LoginScreen(
             modifier = Modifier.padding(innerpadding), viewModel = LoginScreenViewModel(
                 authenticationRepository = TestAuthRepository(),
-                userDataUseCase = UserDataUseCase(userDataRepository = PreviewUserDataRepository())
+                userDataUseCase = UserDataUseCase(
+                    userDataRepository = PreviewUserDataRepository(),
+                    fcmTokenRepository = PreviewFCMTokenRepository()
+                )
             ), onShowSnackbar = { message -> }, navController = navController
         )
 

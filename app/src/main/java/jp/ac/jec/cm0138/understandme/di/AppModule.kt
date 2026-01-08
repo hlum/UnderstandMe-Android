@@ -12,6 +12,7 @@ import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.FCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.QuestionWithChoicesRepository
@@ -21,6 +22,7 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepos
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAnswerRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopFCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
@@ -120,6 +122,14 @@ object AppModule {
         averageScoreAPIService: AverageScoreAPIService
     ): AverageScoreRepository {
         return LollipopAverageScoreRepository(averageScoreAPIService = averageScoreAPIService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFCMTokenRepository(
+        fcmTokenAPIService: FCMTokenAPIService
+    ): FCMTokenRepository {
+        return LollipopFCMTokenRepository(fcmTokenAPIService = fcmTokenAPIService)
     }
 
     @Provides
