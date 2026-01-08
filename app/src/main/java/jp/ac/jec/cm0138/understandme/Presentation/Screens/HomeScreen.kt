@@ -48,6 +48,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkWithStatus
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ClassItemView
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
@@ -80,9 +82,6 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            Button(
-                onClick = {viewModel.logout()}
-            ) {Text("Log out") }
             ClassListBanner(classes = viewModel.classList)
             HomeworkListBanner(navController, homeworks = viewModel.homeworks)
         }
@@ -126,6 +125,7 @@ fun HomeworkListBanner(
                 dueDate = homework.dueDateString,
                 homeworkState = homework.submissionState,
                 onTap = { navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id)) },
+                onAnswerClicked = { navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))},
                 modifier = Modifier.padding(horizontal = 10.dp)
             )
         }

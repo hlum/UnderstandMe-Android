@@ -9,8 +9,7 @@ class ResultUseCase @Inject constructor(
 
     suspend fun fetchResults(
         userID: String,
-        year: Int
-    ) = resultRepository.fetchResults(userID, year)
+    ) = resultRepository.fetchResults(userID)
 
     suspend fun fetchResult(
         userID: String,

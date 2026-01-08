@@ -11,9 +11,8 @@ class LollipopResultRepository @Inject constructor(
 ): ResultRepository {
     override suspend fun fetchResults(
         userID: String,
-        year: Int
     ): List<ResultData> {
-        val response = resultAPIService.fetchResults(userID, year)
+        val response = resultAPIService.fetchResults(userID)
         val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
 
         return apiResponse.data ?: throw IllegalStateException("No result data")

@@ -118,4 +118,7 @@ dependencies {
     // Lottie
     implementation(libs.lottie.compose)
 
+    // Vico
+    implementation(libs.vico.compose)
+
 }
