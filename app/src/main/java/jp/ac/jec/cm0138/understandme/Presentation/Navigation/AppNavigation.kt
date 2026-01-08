@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.AnswerQuestionsScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ClassListScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.DetailStatsScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
@@ -129,6 +130,14 @@ fun AppNavigation(
                 homeworkID = homeworkID,
                 modifier = Modifier.padding(paddingValues),
                 navController = navController
+            )
+        }
+
+
+        composable<DETAIL_STATS_ROUTE> {
+            DetailStatsScreen(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
             )
         }
     }

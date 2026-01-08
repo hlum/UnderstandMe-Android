@@ -1,7 +1,10 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
+import android.R.attr.shape
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.DETAIL_STATS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.MonthlyAverageScoreChart
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.ProfileScreenViewModel
 import jp.ac.jec.cm0138.understandme.R
@@ -108,17 +115,74 @@ fun ProfileScreen(
                 )
             )
 
-            MonthlyAverageScoreChart(
-                currentSelectedYear = viewModel.currentSelectedYearForGraph,
-                nextYearButtonClicked = {
-                    viewModel.onNextYearButtonClicked()
-                },
-                previousYearButtonClicked = {
-                    viewModel.onPreviousYearButtonClicked()
-                },
-                monthlyData = viewModel.monthlyAverageResult,
-                modifier = Modifier.padding(10.dp)
-            )
+            if (viewModel.monthlyAverageResult.isNotEmpty()) {
+                MonthlyAverageScoreChart(
+                    currentSelectedYear = viewModel.currentSelectedYearForGraph,
+                    nextYearButtonClicked = {
+                        viewModel.onNextYearButtonClicked()
+                    },
+                    previousYearButtonClicked = {
+                        viewModel.onPreviousYearButtonClicked()
+                    },
+                    monthlyData = viewModel.monthlyAverageResult,
+                    modifier = Modifier.padding(10.dp)
+                )
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .height(200.dp)
+                        .background(MyAppTheme.colors.background),
+                    shape = RoundedCornerShape(20.dp),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                    Icon(
+                        painter = painterResource(R.drawable.nosign),
+                        contentDescription = "",
+                        tint = Color.Gray,
+                        modifier = Modifier
+                            .size(50.dp)
+                    )
+                    Text("平均スコアのデータが \n まだありません。",
+                        modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                        textAlign = TextAlign.Center,
+                        style = CustomTypography.body.copy(
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        ),
+                    )
+                    }
+                }
+            }
+
+
+            // Legend
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(MyAppTheme.colors.accent, CircleShape)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "平均スコア",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -127,7 +191,7 @@ fun ProfileScreen(
                 finishedHomeworkCount = viewModel.allResults.size,
                 averageScore = viewModel.averageScoreOfAllTime,
                 onClick = {
-                    // TODO: Navigate to the detailed stats screen
+                    navController.navigate(DETAIL_STATS_ROUTE)
                 }
             )
 
@@ -187,7 +251,7 @@ fun StatsButton(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        onClick = { },
+        onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 2.dp,
         modifier = modifier

@@ -82,9 +82,6 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            Button(
-                onClick = {viewModel.logout()}
-            ) {Text("Log out") }
             ClassListBanner(classes = viewModel.classList)
             HomeworkListBanner(navController, homeworks = viewModel.homeworks)
         }

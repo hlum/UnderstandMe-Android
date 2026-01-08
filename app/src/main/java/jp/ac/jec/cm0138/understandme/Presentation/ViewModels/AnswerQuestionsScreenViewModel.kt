@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
@@ -99,7 +100,7 @@ class AnswerQuestionsScreenViewModel @Inject constructor(
 
     fun goToNextQuestion(navController: NavController, homeworkID: String) {
         if (currentQuestionIndex >= questionsWithChoices.size - 1) {
-            navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homeworkID))
+            navController.popBackStack()
         } else {
             currentQuestionIndex++
         }
