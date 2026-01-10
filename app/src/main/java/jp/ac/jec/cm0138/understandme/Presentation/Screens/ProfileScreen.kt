@@ -61,6 +61,7 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.loadProfileData()
@@ -212,7 +213,7 @@ fun ProfileScreen(
 
             LogoutButton(
                 onClick = {
-                    viewModel.signOut()
+                    viewModel.signOut(context)
                 }
             )
 

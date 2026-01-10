@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_ENTRY_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.RESULT_CONFIRMATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.LottieView
@@ -77,7 +78,7 @@ fun HomeworkDetailScreen(
         modifier = modifier, topBar = {
             HeaderAndBackButton(
                 headerTitle = "課題詳細",
-                onBackButtonClicked = { navController.popBackStack() })
+                onBackButtonClicked = { navController.navigate(HOMEWORK_ENTRY_ROUTE) })
         }) { innerPadding ->
 
 

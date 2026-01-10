@@ -12,6 +12,7 @@ import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.FCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.QuestionWithChoicesRepository
@@ -21,6 +22,7 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepos
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAnswerRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopFCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
@@ -28,6 +30,7 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AverageScoreAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.FCMTokenAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.QuestionWithChoicesAPIService
@@ -123,6 +126,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFCMTokenRepository(
+        fcmTokenAPIService: FCMTokenAPIService
+    ): FCMTokenRepository {
+        return LollipopFCMTokenRepository(fcmTokenAPIService = fcmTokenAPIService)
+    }
+
+    @Provides
+    @Singleton
     fun provideUserAPIService(
         retrofit: Retrofit
     ): UserAPIService {
@@ -187,6 +198,15 @@ object AppModule {
         retrofit: Retrofit
     ): AverageScoreAPIService {
         return retrofit.create(AverageScoreAPIService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFCMTokenAPIService(
+        retrofit: Retrofit
+    ): FCMTokenAPIService {
+        return retrofit.create(FCMTokenAPIService::class.java)
     }
 
 

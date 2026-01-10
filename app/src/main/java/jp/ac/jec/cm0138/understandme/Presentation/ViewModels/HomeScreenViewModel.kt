@@ -1,5 +1,6 @@
 package jp.ac.jec.cm0138.understandme.Presentation.ViewModels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Entity.HomeworkState
@@ -20,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
@@ -44,6 +47,7 @@ class HomeScreenViewModel @Inject constructor(
 
     var currentUser by mutableStateOf<UserData?>(null)
 
+    private var hasUpdatedFCMToken = false
 
 
 fun logout() {
@@ -82,6 +86,32 @@ fun logout() {
                 Log.e(TAG, "loadClassesAndHomeworks", e)
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+
+    fun saveFCMToken(context: Context) {
+        if (hasUpdatedFCMToken) return
+
+        viewModelScope.launch {
+            try {
+                val token = withContext(Dispatchers.IO) {
+                    FirebaseMessaging.getInstance().token.await()
+                }
+                val userID = authRepository.getCurrentUser().uid
+
+                withContext(Dispatchers.IO) {
+                    userDataUseCase.updateFCMToken(
+                        context = context,
+                        userID = userID,
+                        fcmToken = token
+                    )
+                }
+                hasUpdatedFCMToken = true
+                Log.d(TAG, "FCM token updated successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update FCM token", e)
             }
         }
     }

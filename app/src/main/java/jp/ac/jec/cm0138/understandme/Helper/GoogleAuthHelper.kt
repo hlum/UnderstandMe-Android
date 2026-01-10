@@ -65,8 +65,8 @@ class GoogleAuthHelper() {
 
 private fun createGoogleIDOption(serverClientID: String): GetGoogleIdOption {
     return GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(false)
+//        .setFilterByAuthorizedAccounts(false)
         .setServerClientId(serverClientID)
-        .setAutoSelectEnabled(false)
+//        .setAutoSelectEnabled(false)
         .build()
 }
