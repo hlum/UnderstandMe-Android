@@ -16,9 +16,14 @@ class UnderstandMeFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "FCMService"
-        private const val CHANNEL_ID = "understand_me_notifications"
+        const val CHANNEL_ID = "understand_me_notifications"
         private const val CHANNEL_NAME = "UnderstandMe Notifications"
         const val EXTRA_HOMEWORK_ID = "homeworkId"
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
     }
 
     override fun onNewToken(token: String) {
@@ -28,17 +33,24 @@ class UnderstandMeFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+        Log.d(TAG, "onMessageReceived called")
         Log.d(TAG, "From: ${remoteMessage.from}")
+        Log.d(TAG, "Data: ${remoteMessage.data}")
+        Log.d(TAG, "Notification: ${remoteMessage.notification}")
 
-        val homeworkId = remoteMessage.data["homeworkId"]
-        Log.d(TAG, "Homework ID: $homeworkId")
+        val data = remoteMessage.data
+        val homeworkId = data["homeworkId"]
 
+        // Get title and body from notification payload or data payload
         val title = remoteMessage.notification?.title 
-            ?: remoteMessage.data["title"] 
+            ?: data["title"] 
             ?: "UnderstandMe"
         val body = remoteMessage.notification?.body 
-            ?: remoteMessage.data["body"] 
+            ?: data["body"] 
             ?: ""
+
+        Log.d(TAG, "Homework ID: $homeworkId")
+        Log.d(TAG, "Showing notification - Title: $title, Body: $body")
 
         showNotification(
             title = title,
@@ -50,11 +62,11 @@ class UnderstandMeFirebaseMessagingService : FirebaseMessagingService() {
     private fun showNotification(title: String, body: String, homeworkId: String?) {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        createNotificationChannel(notificationManager)
+        createNotificationChannel()
 
         val intent = Intent(this, MainActivity::class.java).apply {
-            action = Intent.ACTION_MAIN
-            addCategory(Intent.CATEGORY_LAUNCHER)
+            action = "OPEN_HOMEWORK_DETAIL"
+            addCategory(Intent.CATEGORY_DEFAULT)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             homeworkId?.let { putExtra(EXTRA_HOMEWORK_ID, it) }
         }
@@ -72,24 +84,30 @@ class UnderstandMeFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(body)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
             .build()
 
+        Log.d(TAG, "Calling notificationManager.notify()")
         notificationManager.notify(homeworkId?.hashCode() ?: System.currentTimeMillis().toInt(), notification)
     }
 
-    private fun createNotificationChannel(notificationManager: NotificationManager) {
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Notifications for homework updates"
-                enableLights(true)
-                enableVibration(true)
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
+                val channel = NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "Notifications for homework updates"
+                    enableLights(true)
+                    enableVibration(true)
+                }
+                notificationManager.createNotificationChannel(channel)
+                Log.d(TAG, "Notification channel created")
             }
-            notificationManager.createNotificationChannel(channel)
         }
     }
 }
