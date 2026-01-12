@@ -78,6 +78,9 @@ class LoginScreenViewModel @Inject constructor(
             val (studentCode, className, admissionYear) =
                 extractStudentInfo(email)
 
+            // Get photoURL from Google provider
+            val googleProvider = user.providerData.find { it.providerId == "google.com" }
+            val photoURL = googleProvider?.photoUrl?.toString()
 
             val userData = UserData(
                 id = user.uid,
@@ -86,7 +89,7 @@ class LoginScreenViewModel @Inject constructor(
                 studentCode = studentCode,
                 majorCode = className,
                 admissionYear = admissionYear,
-                photoURL = if(user.photoUrl != null) user.photoUrl.toString() else null
+                photoURL = photoURL
             )
 
         try {
