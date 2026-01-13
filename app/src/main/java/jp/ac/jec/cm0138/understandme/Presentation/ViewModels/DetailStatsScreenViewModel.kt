@@ -33,11 +33,11 @@ class DetailStatsScreenViewModel @Inject constructor(
 
     fun loadAverageScoresPerClass() {
         isLoading = true
-        val currentUser = authRepository.getCurrentUser()
 
         viewModelScope.launch {
             try {
-                val averageScores = withContext(Dispatchers.Default) {
+                val averageScores = withContext(Dispatchers.IO) {
+                    val currentUser = authRepository.getCurrentUser()
                     averageScoreUseCase.fetchAverageScores(
                         userID = currentUser.uid
                     )

@@ -47,13 +47,12 @@ class ResultConfirmationScreenViewModel @Inject constructor(
 
                 loadQuestions(homeworkID)
 
-                val userAnswerAndQuestionID = withContext(Dispatchers.Default) {
+                val userAnswerAndQuestionID = withContext(Dispatchers.IO) {
                     val userID = authRepository.getCurrentUser().uid
                     val answers = answerUseCase.fetchAnswers(
                         homeworkID = homeworkID,
                         userID = userID
                     )
-
 
                     questionsWithChoices.map { question ->
                         val matchedAnswer = answers.firstOrNull { answer ->
@@ -65,7 +64,6 @@ class ResultConfirmationScreenViewModel @Inject constructor(
                             userChoiceID = matchedAnswer?.selectedChoiceID // null if not answered
                         )
                     }
-
                 }
 
                 userAnswers = userAnswerAndQuestionID

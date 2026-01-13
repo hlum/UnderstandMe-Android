@@ -14,7 +14,9 @@ import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.HomeworkUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.ResultUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,18 +42,31 @@ class HomeworkDetailScreenViewModel @Inject constructor(
 
     fun loadData(homeworkID: String) {
         viewModelScope.launch {
-            loadHomework(homeworkID)
+            isLoading = true
+            try {
+                withContext(Dispatchers.IO) {
+                    loadHomeworkInternal(homeworkID)
+                }
 
-            val classID = homework?.classID
+                val classID = homework?.classID
 
-            // Load class name
-            if (classID != null) {
-                loadClassName(classID)
-            }
+                // Load class name
+                if (classID != null) {
+                    withContext(Dispatchers.IO) {
+                        loadClassNameInternal(classID)
+                    }
+                }
 
-            // 回答完了している場合は結果も読み込む
-            if(homework?.submissionState == HomeworkState.completed) {
-                loadResult()
+                // 回答完了している場合は結果も読み込む
+                if(homework?.submissionState == HomeworkState.completed) {
+                    withContext(Dispatchers.IO) {
+                        loadResultInternal()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading data", e)
+            } finally {
+                isLoading = false
             }
         }
     }
@@ -59,26 +74,42 @@ class HomeworkDetailScreenViewModel @Inject constructor(
 
     fun regenerateQuestions(homeworkID: String) {
         viewModelScope.launch {
-            val authUser = authRepository.getCurrentUser()
-            homeworkUseCase.retryQuestionGeneration(
-                homeworkID = homeworkID,
-                studentID = authUser.uid
-            )
-
-            reload()
+            isLoading = true
+            try {
+                withContext(Dispatchers.IO) {
+                    val authUser = authRepository.getCurrentUser()
+                    homeworkUseCase.retryQuestionGeneration(
+                        homeworkID = homeworkID,
+                        studentID = authUser.uid
+                    )
+                }
+                reload()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error regenerating questions", e)
+            } finally {
+                isLoading = false
+            }
         }
     }
 
 
     fun cancelSubmission(homeworkID: String) {
         viewModelScope.launch {
-            val authUser = authRepository.getCurrentUser()
-            homeworkUseCase.cancelHomeworkSubmission(
-                homeworkID = homeworkID,
-                studentID = authUser.uid
-            )
-
-            reload()
+            isLoading = true
+            try {
+                withContext(Dispatchers.IO) {
+                    val authUser = authRepository.getCurrentUser()
+                    homeworkUseCase.cancelHomeworkSubmission(
+                        homeworkID = homeworkID,
+                        studentID = authUser.uid
+                    )
+                }
+                reload()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error cancelling submission", e)
+            } finally {
+                isLoading = false
+            }
         }
     }   
 
@@ -86,40 +117,35 @@ class HomeworkDetailScreenViewModel @Inject constructor(
     fun reload() {
         viewModelScope.launch {
             val homeworkID = homework?.id ?: return@launch
-            loadHomework(homeworkID)
-        }
-    }
-
-    private suspend fun loadHomework(homeworkID: String) {
-
-        val authUser = authRepository.getCurrentUser()
-
-           try {
-               isLoading = true
-               homework = homeworkUseCase.fetchHomework(authUser.uid, homeworkID)
-           } catch (e: Exception) {
-               Log.e(TAG, "Error loading homework details", e)
-           } finally {
-               isLoading = false
-           }
-    }
-
-
-    private suspend fun loadResult() {
-        val homework = homework ?: return
-        val authUser = authRepository.getCurrentUser()
-
+            isLoading = true
             try {
-                isLoading = true
-                result = resultUseCase.fetchResult(
-                    authUser.uid,
-                    homework.id
-                )
+                withContext(Dispatchers.IO) {
+                    loadHomeworkInternal(homeworkID)
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading result", e)
+                Log.e(TAG, "Error reloading homework", e)
             } finally {
                 isLoading = false
             }
+        }
+    }
+
+    private suspend fun loadHomeworkInternal(homeworkID: String) {
+        val authUser = authRepository.getCurrentUser()
+        val loadedHomework = homeworkUseCase.fetchHomework(authUser.uid, homeworkID)
+        withContext(Dispatchers.Main) {
+            homework = loadedHomework
+        }
+    }
+
+
+    private suspend fun loadResultInternal() {
+        val hw = homework ?: return
+        val authUser = authRepository.getCurrentUser()
+        val loadedResult = resultUseCase.fetchResult(authUser.uid, hw.id)
+        withContext(Dispatchers.Main) {
+            result = loadedResult
+        }
     }
 
     fun uploadProject() {
@@ -129,9 +155,9 @@ class HomeworkDetailScreenViewModel @Inject constructor(
             return
         }
 
-        val homework = homework
+        val hw = homework
 
-        if (homework == null) {
+        if (hw == null) {
             showInputError("宿題の情報が見つかりません。")
             return
         }
@@ -139,8 +165,10 @@ class HomeworkDetailScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading = true
-                val authUser = authRepository.getCurrentUser()
-                homeworkUseCase.uploadProject(authUser.uid, homework.id, projectLink)
+                withContext(Dispatchers.IO) {
+                    val authUser = authRepository.getCurrentUser()
+                    homeworkUseCase.uploadProject(authUser.uid, hw.id, projectLink)
+                }
                 reload()
             }catch (e: Exception) {
                 Log.e(TAG, "Error uploading project", e)
@@ -151,12 +179,11 @@ class HomeworkDetailScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadClassName(classID: String) {
-            try {
-                className = classUseCase.fetchClass(classID).name
-            } catch (e: Exception) {
-                Log.e(TAG, "Error loading class name", e)
-            }
+    private suspend fun loadClassNameInternal(classID: String) {
+        val name = classUseCase.fetchClass(classID).name
+        withContext(Dispatchers.Main) {
+            className = name
+        }
     }
 
 
