@@ -9,6 +9,7 @@ import jp.ac.jec.cm0138.understandme.LollipopResultRepository.Impl.LollipopResul
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.AverageScoreForClassItem
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AnswerRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
+import jp.ac.jec.cm0138.understandme.Retrofit.BaseUrlInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
@@ -237,8 +238,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(apiKey: String): OkHttpClient {
+    fun provideOkHttpClient(
+        apiKey: String,
+        baseUrlInterceptor: BaseUrlInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(baseUrlInterceptor)
             .addInterceptor(APIKeyInterceptor(apiKey))
             .build()
     }

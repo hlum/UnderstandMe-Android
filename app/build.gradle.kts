@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.config)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
