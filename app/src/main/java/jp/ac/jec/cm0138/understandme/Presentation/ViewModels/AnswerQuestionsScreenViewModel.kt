@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
+import jp.ac.jec.cm0138.understandme.Helper.RemoteConfigManager
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.AnswerUseCase
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnswerQuestionsScreenViewModel @Inject constructor(
+    val remoteConfigManager: RemoteConfigManager,
     private val authRepository: AuthRepository,
     private val questionWithChoicesUseCase: QuestionWithChoicesUseCase,
     private val answerUseCase: AnswerUseCase

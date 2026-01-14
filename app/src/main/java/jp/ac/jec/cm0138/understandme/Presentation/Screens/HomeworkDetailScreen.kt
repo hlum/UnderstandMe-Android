@@ -143,11 +143,18 @@ fun HomeworkDetailScreen(
                     QuestionGeneratedUI(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(55.dp),
-                        onAnswerBtnClick = {
-                            navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homeworkID, mode = AnswerMode.ANSWER))
-                        }
-                    )
+                            .height(55.dp), onAnswerBtnClick = {
+                            navController.navigate(
+                                ANSWER_QUESTIONS_ROUTE(
+                                    homeworkID = homeworkID, mode = AnswerMode.ANSWER
+                                )
+                            ) {
+                                popUpTo(navController.currentBackStackEntry!!.destination.route!!) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        })
                 }
 
                 HomeworkState.completed -> {
@@ -155,11 +162,9 @@ fun HomeworkDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(55.dp)
-                            .padding(horizontal = 10.dp),
-                        onClick = {
+                            .padding(horizontal = 10.dp), onClick = {
                             navController.navigate(RESULT_CONFIRMATION_ROUTE(homeworkID = homeworkID))
-                        },
-                        buttonText = "回答履歴を見る"
+                        }, buttonText = "回答履歴を見る"
                     )
                 }
 
@@ -185,10 +190,8 @@ fun HomeworkDetailScreen(
 
                     ) {
                         Text(
-                            "提出を取り消す",
-                            style = CustomTypography.header.copy(
-                                fontSize = 15.sp,
-                                color = Color.Red
+                            "提出を取り消す", style = CustomTypography.header.copy(
+                                fontSize = 15.sp, color = Color.Red
                             )
                         )
                     }
@@ -201,29 +204,22 @@ fun HomeworkDetailScreen(
 
 @Composable
 fun CustomButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    buttonText: String
+    modifier: Modifier = Modifier, onClick: () -> Unit, buttonText: String
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier
-            .clip(RoundedCornerShape(30.dp)),
+        modifier = modifier.clip(RoundedCornerShape(30.dp)),
         color = MyAppTheme.colors.accent
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Text(
-                text = buttonText,
-                modifier = Modifier,
-                style = CustomTypography.header.copy(
-                    color = Color.White,
-                    fontSize = 15.sp
+                text = buttonText, modifier = Modifier, style = CustomTypography.header.copy(
+                    color = Color.White, fontSize = 15.sp
                 )
             )
         }
@@ -233,16 +229,14 @@ fun CustomButton(
 
 @Composable
 fun QuestionGeneratedUI(
-    onAnswerBtnClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onAnswerBtnClick: () -> Unit, modifier: Modifier = Modifier
 ) {
 
     Surface(
         onClick = onAnswerBtnClick,
         shape = (RoundedCornerShape(30.dp)),
         color = MyAppTheme.colors.accent,
-        modifier = modifier
-            .padding(horizontal = 10.dp)
+        modifier = modifier.padding(horizontal = 10.dp)
     ) {
         Row(
             modifier = Modifier,
@@ -250,16 +244,14 @@ fun QuestionGeneratedUI(
             verticalAlignment = Alignment.CenterVertically
         ) {
             LottieView(
-                R.raw.ai,
-                modifier = Modifier.width(50.dp)
+                R.raw.ai, modifier = Modifier.width(50.dp)
             )
 
             Text(
                 text = "クイズに回答",
                 modifier = Modifier.padding(start = 8.dp),
                 style = CustomTypography.header.copy(
-                    color = Color.White,
-                    fontSize = 15.sp
+                    color = Color.White, fontSize = 15.sp
                 )
             )
         }

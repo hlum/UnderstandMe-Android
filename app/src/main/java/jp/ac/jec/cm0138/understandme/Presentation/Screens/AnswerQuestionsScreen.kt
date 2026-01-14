@@ -1,7 +1,10 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -25,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,8 +65,14 @@ fun AnswerQuestionsScreen(
     val currentQuestionIndex = viewModel.currentQuestionIndex
     var selectedChoiceID by remember { mutableStateOf<String?>(null) }
 
-    val progress = remember { mutableStateOf(0f) }
-    var mainTimerDuration by remember { mutableStateOf(20) }
+    val progress = remember { mutableFloatStateOf(0f) }
+    var mainTimerDuration by remember { mutableIntStateOf(viewModel.remoteConfigManager.mainTimerDuration) }
+
+
+    BackHandler(enabled = true) {
+        // Do nothing → disables system back
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.loadQuestions(homeworkID = homeworkID)
@@ -69,7 +81,7 @@ fun AnswerQuestionsScreen(
     // Reset timers when question changes
     LaunchedEffect(currentQuestionIndex) {
         progress.value = 0f
-        mainTimerDuration = 20
+        mainTimerDuration = viewModel.remoteConfigManager.mainTimerDuration
         submitted = false
         selectedChoiceID = null
     }
@@ -105,9 +117,13 @@ fun AnswerQuestionsScreen(
         return
     }
 
-
+    val scrollState = rememberScrollState()
     Column(
         modifier = modifier
+            .scrollable(
+                scrollState,
+                orientation = Orientation.Vertical
+            )
     ) {
         val currentQuestion = questionsWithChoices[currentQuestionIndex]
 
@@ -140,7 +156,7 @@ fun AnswerQuestionsScreen(
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally),
             progress = progress,
-            durationSeconds = 10,
+            durationSeconds = viewModel.remoteConfigManager.arcTimerDuration,
             label = "Push",
             onComplete = {
                 if (!submitted) {
