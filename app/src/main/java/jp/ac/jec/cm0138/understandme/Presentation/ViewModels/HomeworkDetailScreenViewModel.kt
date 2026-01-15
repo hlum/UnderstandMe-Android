@@ -200,7 +200,7 @@ class HomeworkDetailScreenViewModel @Inject constructor(
 
         // GitHub / Google Drive check
         if (!isGithubOrGoogleDriveLink(link)) {
-            showInputError("GitHub または Google Drive のリンクを入力してください。")
+            showInputError("有効なGitHubリポジトリURL (https://github.com/ユーザー名/リポジトリ名) または Google Drive のリンクを入力してください。")
             return false
         }
 
@@ -208,13 +208,28 @@ class HomeworkDetailScreenViewModel @Inject constructor(
     }
 
 
+    /// Validates GitHub repository URL
+    /// Valid formats:
+    /// - https://github.com/username/repository
+    /// - https://github.com/username/repository/
     private fun isGithubOrGoogleDriveLink(link: String): Boolean {
         return try {
             val uri = android.net.Uri.parse(link)
             val host = uri.host ?: return false
 
-            host.contains("github.com", ignoreCase = true) ||
-                    host.contains("drive.google.com", ignoreCase = true)
+            when {
+                host.equals("github.com", ignoreCase = true) -> {
+                    // Validate that the URL is a valid repository URL for git clone
+                    // Must have exactly 2 path segments: username and repository
+                    val pathSegments = uri.pathSegments
+                    pathSegments.size == 2
+                }
+                host.contains("drive.google.com", ignoreCase = true) -> {
+                    // Google Drive links are accepted as-is
+                    true
+                }
+                else -> false
+            }
         } catch (e: Exception) {
             false
         }
