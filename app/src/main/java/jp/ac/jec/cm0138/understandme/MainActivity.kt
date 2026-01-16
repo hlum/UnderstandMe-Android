@@ -45,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AppNavigation
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.LOGIN_ROUTE
@@ -119,7 +120,10 @@ class MainActivity : ComponentActivity() {
                         val currentRoute =
                             navController.currentBackStackEntryAsState().value?.destination?.route
 
-                        if (currentRoute != LOGIN_ROUTE::class.qualifiedName) {
+                        val shouldShowBottomBar = currentRoute != LOGIN_ROUTE::class.qualifiedName &&
+                                                   currentRoute != ANSWER_QUESTIONS_ROUTE::class.qualifiedName
+
+                        if (shouldShowBottomBar) {
                             NavigationBar {
 
                                 bottomNavItems.forEach { item ->
