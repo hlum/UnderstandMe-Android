@@ -78,6 +78,10 @@ fun LoginScreen(
                 onShowSnackbar("サインインがキャンセルされました")
             }
 
+            AuthState.NoCredentialAvailable -> {
+                onShowSnackbar("Googleアカウントでログインしているか、デバイスのロック画面（PIN、パターン、パスワード）が設定されているかを確認してください")
+            }
+
             else -> Unit
         }
     }

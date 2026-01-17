@@ -22,7 +22,8 @@ enum class AuthState {
     Loading,
     Success,
     Cancelled,
-    Failed;
+    Failed,
+    NoCredentialAvailable;
 
     companion object {
         fun fromAuthResult(authResult: AuthResult): AuthState {
@@ -30,6 +31,7 @@ enum class AuthState {
                 is AuthResult.Success -> Success
                 is AuthResult.Cancelled -> Cancelled
                 is AuthResult.Failed -> Failed
+                is AuthResult.NoCredentialAvailable -> NoCredentialAvailable
             }
         }
     }

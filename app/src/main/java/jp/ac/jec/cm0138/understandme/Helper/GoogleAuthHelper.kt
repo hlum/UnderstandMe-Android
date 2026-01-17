@@ -6,13 +6,21 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+
+sealed class GoogleAuthError : Exception() {
+    object UserCancelled : GoogleAuthError()
+    object NoCredentialAvailable : GoogleAuthError()
+    data class Unknown(val error: Throwable) : GoogleAuthError()
+}
 
 class GoogleAuthHelper() {
     val TAG = "GoogleAuthHelper"
 
-    suspend fun getGoogleIdTokenCredential(context: Context): GoogleIdTokenCredential? {
+    suspend fun getGoogleIdTokenCredential(context: Context): GoogleIdTokenCredential {
         try {
             val googleIDOption: GetGoogleIdOption =
                 createGoogleIDOption(serverClientID = "660534500337-7m8qrrqn7ngpi3hsuen5ptf7ll8n289p.apps.googleusercontent.com")
@@ -27,9 +35,18 @@ class GoogleAuthHelper() {
             )
             Log.i("GoogleAuthHelper", "Credential returned: ${result.credential}")
             return handleSignIn(result = result)
+        } catch (e: GetCredentialCancellationException) {
+            Log.e(TAG, "ユーザーがサインインをキャンセルしました。")
+            throw GoogleAuthError.UserCancelled
+        } catch (e: NoCredentialException) {
+            // NoCredentialException means either:
+            // 1. No Google account signed in on device, OR
+            // 2. No device security (PIN/password/pattern) set up
+            Log.e(TAG, "認証情報が利用できません - Googleアカウントまたはデバイスセキュリティが未設定です。")
+            throw GoogleAuthError.NoCredentialAvailable
         } catch (e: Exception) {
-            Log.e(TAG, "GoogleIdTokenCredentialの取得に失敗しました。原因：${e}")
-            return null
+            Log.e(TAG, "GoogleIdTokenCredentialの取得に失敗しました。原因：${e}, Type: ${e.javaClass.simpleName}")
+            throw GoogleAuthError.Unknown(e)
         }
 
     }

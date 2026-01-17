@@ -6,6 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import jp.ac.jec.cm0138.understandme.Helper.GoogleAuthError
 import jp.ac.jec.cm0138.understandme.Helper.GoogleAuthHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,7 @@ sealed class AuthResult {
     object Success : AuthResult()
     object Failed: AuthResult()
     object Cancelled : AuthResult()
+    object NoCredentialAvailable : AuthResult()
 }
 
 
@@ -26,20 +28,25 @@ class FirebaseAuthenticationRepository(): AuthRepository {
 
     override suspend fun signInWithGoogle(context: Context): AuthResult {
         return try {
-
                 // CredentialManagerだけはMainThreadで
                 val googleIdTokenCredential = withContext(Dispatchers.Main) {
                     googleAuthHelper.getGoogleIdTokenCredential(context = context)
-                } ?: return AuthResult.Cancelled
+                }
 
                 // Firebase auth は IO
-            withContext(Dispatchers.IO) {
-                val credential =
-                    GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
-                auth.signInWithCredential(credential).await()
-            }
+                withContext(Dispatchers.IO) {
+                    val credential =
+                        GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                    auth.signInWithCredential(credential).await()
+                }
 
-            AuthResult.Success
+                AuthResult.Success
+            } catch (e: GoogleAuthError.UserCancelled) {
+                Log.e(TAG, "ユーザーがサインインをキャンセルしました。")
+                AuthResult.Cancelled
+            } catch (e: GoogleAuthError.NoCredentialAvailable) {
+                Log.e(TAG, "認証情報が利用できません。")
+                AuthResult.NoCredentialAvailable
             } catch (e: Exception) {
                 Log.e(TAG, "Google SignInに失敗しました。原因：${e}")
                 AuthResult.Failed
