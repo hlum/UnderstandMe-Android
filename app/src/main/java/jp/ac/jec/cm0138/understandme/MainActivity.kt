@@ -121,9 +121,12 @@ class MainActivity : ComponentActivity() {
                         val currentRoute =
                             navController.currentBackStackEntryAsState().value?.destination?.route
 
+                        val currentRoutesISAnswerQuestionsRoute = currentRoute?.contains("ANSWER_QUESTIONS_ROUTE")?: false
+                        val currentRoutesIsTestExplanationRoute = currentRoute?.contains("TEST_EXPLANATION_ROUTE")?: false
+
                         val shouldShowBottomBar = currentRoute != LOGIN_ROUTE::class.qualifiedName &&
-                                                   currentRoute != ANSWER_QUESTIONS_ROUTE::class.qualifiedName &&
-                                                   currentRoute != TEST_EXPLANATION_ROUTE::class.qualifiedName
+                                                   !currentRoutesIsTestExplanationRoute &&
+                                                   !currentRoutesISAnswerQuestionsRoute
 
                         if (shouldShowBottomBar) {
                             NavigationBar {
