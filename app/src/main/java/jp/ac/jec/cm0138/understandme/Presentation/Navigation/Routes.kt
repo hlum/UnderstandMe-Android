@@ -31,6 +31,11 @@ data class HOMEWORK_DETAIL_ROUTE(
 
 
 @Serializable
+data class TEST_EXPLANATION_ROUTE(
+    val homeworkID: String,
+)
+
+@Serializable
 data class ANSWER_QUESTIONS_ROUTE(
     val homeworkID: String,
     val mode: AnswerMode

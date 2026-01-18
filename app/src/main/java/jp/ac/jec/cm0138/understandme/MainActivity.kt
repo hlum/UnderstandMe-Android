@@ -49,6 +49,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_RO
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AppNavigation
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.LOGIN_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.TEST_EXPLANATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.bottomNavItems
 import jp.ac.jec.cm0138.understandme.Service.UnderstandMeFirebaseMessagingService
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
@@ -121,7 +122,8 @@ class MainActivity : ComponentActivity() {
                             navController.currentBackStackEntryAsState().value?.destination?.route
 
                         val shouldShowBottomBar = currentRoute != LOGIN_ROUTE::class.qualifiedName &&
-                                                   currentRoute != ANSWER_QUESTIONS_ROUTE::class.qualifiedName
+                                                   currentRoute != ANSWER_QUESTIONS_ROUTE::class.qualifiedName &&
+                                                   currentRoute != TEST_EXPLANATION_ROUTE::class.qualifiedName
 
                         if (shouldShowBottomBar) {
                             NavigationBar {

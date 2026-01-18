@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +54,7 @@ import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_RO
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_ENTRY_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.RESULT_CONFIRMATION_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.TEST_EXPLANATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.LottieView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkDetailScreenViewModel
@@ -68,6 +70,9 @@ fun HomeworkDetailScreen(
     viewModel: HomeworkDetailScreenViewModel = hiltViewModel(),
     navController: NavController,
 ) {
+
+    val context = LocalContext.current
+    val shouldShowExplanation = TestExplanationPreference.shouldShowExplanation(context)
 
     LaunchedEffect(Unit) {
         viewModel.loadData(homeworkID)
@@ -139,20 +144,34 @@ fun HomeworkDetailScreen(
 
                 }
 
+
                 HomeworkState.questionGenerated -> {
                     QuestionGeneratedUI(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(55.dp), onAnswerBtnClick = {
-                            navController.navigate(
-                                ANSWER_QUESTIONS_ROUTE(
-                                    homeworkID = homeworkID, mode = AnswerMode.ANSWER
-                                )
-                            ) {
-                                popUpTo(navController.currentBackStackEntry!!.destination.route!!) {
-                                    inclusive = true
+                            .height(55.dp),
+                        onAnswerBtnClick = {
+                            if (shouldShowExplanation) {
+                                navController.navigate(
+                                    TEST_EXPLANATION_ROUTE(homeworkID = homeworkID)
+                                ) {
+                                    popUpTo(navController.currentBackStackEntry!!.destination.route!!) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
                                 }
-                                launchSingleTop = true
+                            } else {
+                                navController.navigate(
+                                    ANSWER_QUESTIONS_ROUTE(
+                                        homeworkID = homeworkID,
+                                        mode = AnswerMode.ANSWER
+                                    )
+                                ) {
+                                    popUpTo(navController.currentBackStackEntry!!.destination.route!!) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                }
                             }
                         })
                 }

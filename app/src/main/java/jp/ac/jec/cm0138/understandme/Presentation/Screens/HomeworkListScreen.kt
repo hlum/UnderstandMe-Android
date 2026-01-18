@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +45,7 @@ import jp.ac.jec.cm0138.understandme.Entity.HomeworkFilterOption
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.TEST_EXPLANATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HeaderAndBackButton
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.HomeworkItemView
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.HomeworkListScreenViewModel
@@ -58,6 +60,8 @@ fun HomeworkListScreen(
     className: String? = null,
     viewModel: HomeworkListScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val shouldShowExplanation = TestExplanationPreference.shouldShowExplanation(context)
 
     LaunchedEffect(Unit) {
         if (classID != null) {
@@ -127,8 +131,22 @@ fun HomeworkListScreen(
                             navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homework.id))
                         },
                         onAnswerClicked = {
-                            navController.navigate(ANSWER_QUESTIONS_ROUTE(homeworkID = homework.id, mode = AnswerMode.ANSWER))
-                        },
+                            if(shouldShowExplanation) {
+                                navController.navigate(
+                                    TEST_EXPLANATION_ROUTE(homeworkID = homework.id)
+                                )
+                            }else {
+                                navController.navigate(
+                                    ANSWER_QUESTIONS_ROUTE(
+                                        homeworkID = homework.id,
+                                        mode = AnswerMode.ANSWER
+                                    )
+                                ) {
+                                    popUpTo(navController.currentBackStackEntry!!.destination.route!!) {
+                                        inclusive = false
+                                    }
+                                }
+                            }                        },
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                     )

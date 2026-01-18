@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,6 +46,7 @@ import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.Choice
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
+import jp.ac.jec.cm0138.understandme.Presentation.Navigation.TEST_EXPLANATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ArcTimerButton
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AnswerQuestionsScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
@@ -70,9 +72,8 @@ fun AnswerQuestionsScreen(
 
 
     BackHandler(enabled = true) {
-        // Do nothing → disables system back
+        // Do nothing → disables system back during test
     }
-
 
     LaunchedEffect(Unit) {
         viewModel.loadQuestions(homeworkID = homeworkID)

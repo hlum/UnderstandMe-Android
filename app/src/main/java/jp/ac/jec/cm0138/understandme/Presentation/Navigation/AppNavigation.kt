@@ -19,6 +19,8 @@ import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkDetailScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.HomeworkListScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ProfileScreen
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.ResultConfirmationScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.TestExplanationScreen
+import jp.ac.jec.cm0138.understandme.Presentation.Screens.TestExplanationPreference
 
 @Composable
 fun AppNavigation(
@@ -119,6 +121,28 @@ fun AppNavigation(
             )
         }
 
+
+        composable<TEST_EXPLANATION_ROUTE> { entry ->
+            val homeworkId = entry.arguments?.getString("homeworkID") ?: ""
+            TestExplanationScreen(
+                modifier = Modifier.padding(paddingValues),
+                onDismiss = {
+                    navController.popBackStack()
+                },
+                onStartTest = {
+                    navController.navigate(
+                        ANSWER_QUESTIONS_ROUTE(
+                            homeworkID = homeworkId,
+                            mode = AnswerMode.ANSWER
+                        )
+                    ) {
+                        popUpTo(TEST_EXPLANATION_ROUTE(homeworkId)) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
 
         composable<ANSWER_QUESTIONS_ROUTE> { entry ->
             val homeworkId = entry.arguments?.getString("homeworkID") ?: ""
