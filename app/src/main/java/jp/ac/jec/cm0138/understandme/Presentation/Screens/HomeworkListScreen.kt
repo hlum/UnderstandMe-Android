@@ -63,11 +63,24 @@ fun HomeworkListScreen(
     val context = LocalContext.current
     val shouldShowExplanation = TestExplanationPreference.shouldShowExplanation(context)
 
+    // Load data on initial mount
     LaunchedEffect(Unit) {
         if (classID != null) {
             viewModel.loadHomeworksForClass(classID)
         } else {
             viewModel.loadHomeworks()
+        }
+    }
+
+    // Refresh when returning to this screen (e.g., after completing test)
+    LaunchedEffect(navController.currentBackStackEntry) {
+        if (navController.currentBackStackEntry?.destination?.route != null) {
+            // Refresh data when we come back to this screen
+            if (classID != null) {
+                viewModel.loadHomeworksForClass(classID)
+            } else {
+                viewModel.loadHomeworks()
+            }
         }
     }
     Scaffold(

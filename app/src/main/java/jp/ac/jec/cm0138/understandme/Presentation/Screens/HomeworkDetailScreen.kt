@@ -74,8 +74,15 @@ fun HomeworkDetailScreen(
     val context = LocalContext.current
     val shouldShowExplanation = TestExplanationPreference.shouldShowExplanation(context)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(homeworkID) {
         viewModel.loadData(homeworkID)
+    }
+
+    // Refresh data when returning to this screen (e.g., after completing test)
+    LaunchedEffect(navController.currentBackStackEntry) {
+        if (navController.currentBackStackEntry?.destination?.route?.contains("HOMEWORK_DETAIL_ROUTE") == true) {
+            viewModel.loadData(homeworkID)
+        }
     }
 
 
@@ -151,6 +158,11 @@ fun HomeworkDetailScreen(
                             .fillMaxWidth()
                             .height(55.dp),
                         onAnswerBtnClick = {
+                            // Double-check state before navigating (prevent retaking)
+                            if (homework.submissionState != HomeworkState.questionGenerated) {
+                                return@QuestionGeneratedUI
+                            }
+
                             if (shouldShowExplanation) {
                                 navController.navigate(
                                     TEST_EXPLANATION_ROUTE(homeworkID = homeworkID)

@@ -72,9 +72,17 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
 
+    // Load data on initial mount
     LaunchedEffect(Unit) {
         viewModel.loadData()
         viewModel.saveFCMToken(context)
+    }
+
+    // Refresh when returning to this screen (e.g., after completing test)
+    LaunchedEffect(navController.currentBackStackEntry) {
+        if (navController.currentBackStackEntry?.destination?.route != null) {
+            viewModel.loadData()
+        }
     }
 
     Scaffold(
