@@ -1,15 +1,15 @@
 package jp.ac.jec.cm0138.understandme.di
 
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import jp.ac.jec.cm0138.understandme.BuildConfig
+import jp.ac.jec.cm0138.understandme.Helper.RemoteConfigManager
 import jp.ac.jec.cm0138.understandme.LollipopResultRepository.Impl.LollipopResultRepository
-import jp.ac.jec.cm0138.understandme.Presentation.Screens.AverageScoreForClassItem
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AnswerRepository
-import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
-import jp.ac.jec.cm0138.understandme.Retrofit.BaseUrlInterceptor
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
@@ -28,6 +28,8 @@ import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopProjectRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopQuestionWithChoicesRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopUserDataRepository
+import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
+import jp.ac.jec.cm0138.understandme.Retrofit.BaseUrlInterceptor
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AverageScoreAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
@@ -37,11 +39,11 @@ import jp.ac.jec.cm0138.understandme.Retrofit.Services.ProjectAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.QuestionWithChoicesAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ResultAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.UserAPIService
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -210,7 +212,6 @@ object AppModule {
         return retrofit.create(FCMTokenAPIService::class.java)
     }
 
-
     @Provides
     @Singleton
     fun provideRetrofit(
@@ -239,19 +240,19 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        apiKey: String,
-        baseUrlInterceptor: BaseUrlInterceptor
+        baseUrlInterceptor: BaseUrlInterceptor,
+        firebaseAuth: FirebaseAuth
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(baseUrlInterceptor)
-            .addInterceptor(APIKeyInterceptor(apiKey))
+            .addInterceptor(APIKeyInterceptor(firebaseAuth))
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideAPIKey(): String {
-        return BuildConfig.API_KEY
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 
 }
