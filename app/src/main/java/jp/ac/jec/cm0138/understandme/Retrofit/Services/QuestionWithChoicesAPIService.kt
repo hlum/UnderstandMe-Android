@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface QuestionWithChoicesAPIService {
 
-    @GET("questions_choices/get_questions_choices.php")
+    @GET("questions_choices/v2/get_questions_choices.php")
     suspend fun fetchQuestionsWithChoices(
         @Query("homework_id") homeworkID: String,
         @Query("user_id") userID: String

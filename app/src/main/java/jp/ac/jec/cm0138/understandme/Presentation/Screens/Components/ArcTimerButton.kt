@@ -54,6 +54,7 @@ fun ArcTimerButton(
     modifier: Modifier = Modifier,
     size: Dp = 120.dp,
     strokeWidth: Dp = 12.dp,
+    timerRunning: Boolean,
     label: String? = null,
     accentColor: Color = MaterialTheme.colorScheme.primary,
     warningColor: Color = Color.Red,
@@ -103,7 +104,6 @@ fun ArcTimerButton(
     /* ---------- Timer Logic ---------- */
     fun stopTimer() {
         timerJob?.cancel()
-        timerJob = null
     }
 
     fun startTimer() {
@@ -113,7 +113,7 @@ fun ArcTimerButton(
             val totalMillis = durationSeconds * 1000L
             val startTime = withFrameNanos { it / 1_000_000L }
 
-            while (isActive) {
+            while (isActive && timerRunning) {
                 val currentTime = withFrameNanos { it / 1_000_000L }
                 val elapsed = currentTime - startTime
                 val newProgress = (elapsed / totalMillis.toFloat()).coerceIn(0f, 1f)
@@ -128,6 +128,14 @@ fun ArcTimerButton(
                     break
                 }
             }
+        }
+    }
+
+    LaunchedEffect(timerRunning) {
+        if (!timerRunning) {
+            stopTimer()
+        } else {
+            startTimer()
         }
     }
 

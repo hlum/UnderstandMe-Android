@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,13 +46,13 @@ import androidx.navigation.NavController
 import jp.ac.jec.cm0138.understandme.Entity.Choice
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AnswerMode
-import jp.ac.jec.cm0138.understandme.Presentation.Navigation.TEST_EXPLANATION_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Screens.Components.ArcTimerButton
 import jp.ac.jec.cm0138.understandme.Presentation.ViewModels.AnswerQuestionsScreenViewModel
 import jp.ac.jec.cm0138.understandme.customTheme.CustomTypography
 import jp.ac.jec.cm0138.understandme.customTheme.MyAppTheme
 import jp.ac.jec.cm0138.understandme.customTheme.customPrimaryButtonColors
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun AnswerQuestionsScreen(
@@ -62,13 +62,9 @@ fun AnswerQuestionsScreen(
     navController: NavController,
     viewModel: AnswerQuestionsScreenViewModel = hiltViewModel()
 ) {
-    var submitted by remember { mutableStateOf(false) }
-    val questionsWithChoices = viewModel.questionsWithChoices
-    val currentQuestionIndex = viewModel.currentQuestionIndex
-    var selectedChoiceID by remember { mutableStateOf<String?>(null) }
-
     val progress = remember { mutableFloatStateOf(0f) }
     var mainTimerDuration by remember { mutableIntStateOf(viewModel.remoteConfigManager.mainTimerDuration) }
+    val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
 
 
     BackHandler(enabled = true) {
@@ -80,34 +76,54 @@ fun AnswerQuestionsScreen(
     }
 
     // Reset timers when question changes
-    LaunchedEffect(currentQuestionIndex) {
-        progress.value = 0f
+    LaunchedEffect(viewModel.currentQuestionIndex) {
+        progress.floatValue = 0f
         mainTimerDuration = viewModel.remoteConfigManager.mainTimerDuration
-        submitted = false
-        selectedChoiceID = null
+        viewModel.submitted = false
     }
 
 
-    LaunchedEffect(currentQuestionIndex) {
+    fun handleTimeOut() {
+        if(!viewModel.submitted && !viewModel.isSubmittingAnswer) {
+            viewModel.postAnswer(
+                questionID = viewModel.questionsWithChoices[viewModel.currentQuestionIndex].id,
+                selectedChoiceID = null,
+                homeworkID = homeworkID,
+            )
+//            // Wait for postAnswer to complete, then go to next question
+//            coroutineScope.launch {
+//                delay(100L) // Small delay to allow UI to update
+//                viewModel.goToNextQuestion(navController, homeworkID)
+//            }
+        }
+    }
+
+
+    LaunchedEffect(viewModel.currentQuestionIndex, viewModel.timerRunning) {
         var remaining = mainTimerDuration
 
-        while (remaining > 0) {
+        while (remaining > 0 && viewModel.timerRunning) {
             delay(1000L)
             remaining--
             mainTimerDuration--
         }
-        // Time's up, auto-submit with no answer
-        if (!submitted) {
-            viewModel.postAnswer(
-                questionID = questionsWithChoices[currentQuestionIndex].id,
-                selectedChoiceID = null,
-                homeworkID = homeworkID,
-            )
+        // Time's up, auto-submit with no answer and go to next
+        if (remaining == 0) {
+            handleTimeOut()
+//            if(!submitted && !viewModel.isSubmittingAnswer) {
+//                viewModel.postAnswer(
+//                    questionID = viewModel.questionsWithChoices[currentQuestionIndex].id,
+//                    selectedChoiceID = null,
+//                    homeworkID = homeworkID,
+//                )
+//                // Wait for postAnswer to complete, then go to next question
+//                delay(100L) // Small delay to allow UI to update
+//                viewModel.goToNextQuestion(navController, homeworkID)
+//            }
         }
-        viewModel.goToNextQuestion(navController, homeworkID)
     }
 
-    if (viewModel.isLoading || questionsWithChoices.isEmpty()) {
+    if (viewModel.isLoading || viewModel.questionsWithChoices.isEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -126,7 +142,7 @@ fun AnswerQuestionsScreen(
                 orientation = Orientation.Vertical
             )
     ) {
-        val currentQuestion = questionsWithChoices[currentQuestionIndex]
+        val currentQuestion = viewModel.questionsWithChoices[viewModel.currentQuestionIndex]
 
         QuestionCard(
             questionWithChoices = currentQuestion,
@@ -134,19 +150,20 @@ fun AnswerQuestionsScreen(
                 viewModel.postAnswer(
                     questionID = currentQuestion.id,
                     homeworkID = homeworkID,
-                    selectedChoiceID = selectedChoiceID
+                    selectedChoiceID =viewModel. selectedChoiceID
                 )
-                submitted = true
             },
             mode = mode,
             onNextQuestionClick = {
                 viewModel.goToNextQuestion(navController, homeworkID)
             },
-            submitted = submitted,
-            selectedChoiceID = selectedChoiceID,
-            onSelect = { selectedChoiceID = it },
-            isLastQuestion = currentQuestionIndex == questionsWithChoices.size - 1,
+            submitted = viewModel.submitted,
+            selectedChoiceID = viewModel.selectedChoiceID,
+            onSelect = { viewModel.selectedChoiceID = it },
+            isLastQuestion = viewModel.currentQuestionIndex == viewModel.questionsWithChoices.size - 1,
             mainTimerDuration = mainTimerDuration,
+            correctChoiceID = viewModel.correctChoiceID,
+            isSubmitting = viewModel.isSubmittingAnswer,
             modifier = Modifier.padding(10.dp)
         )
 
@@ -159,15 +176,21 @@ fun AnswerQuestionsScreen(
             progress = progress,
             durationSeconds = viewModel.remoteConfigManager.arcTimerDuration,
             label = "Push",
+            timerRunning = viewModel.timerRunning,
             onComplete = {
-                if (!submitted) {
-                    viewModel.postAnswer(
-                        questionID = questionsWithChoices[currentQuestionIndex].id,
-                        selectedChoiceID = null,
-                        homeworkID = homeworkID,
-                    )
-                }
-                viewModel.goToNextQuestion(navController, homeworkID)
+                handleTimeOut()
+//                if (!submitted && !viewModel.isSubmittingAnswer) {
+//                    viewModel.postAnswer(
+//                        questionID = viewModel.questionsWithChoices[currentQuestionIndex].id,
+//                        selectedChoiceID = null,
+//                        homeworkID = homeworkID,
+//                    )
+//                   // After submitting, automatically go to next question
+//                    coroutineScope.launch {
+//                        delay(100L) // Small delay to allow UI to update
+//                        viewModel.goToNextQuestion(navController, homeworkID)
+//                    }
+//                }
             })
     }
 }
@@ -180,11 +203,13 @@ fun QuestionCard(
     mainTimerDuration: Int = 20,
     isLastQuestion: Boolean = false,
     mode: AnswerMode,
+    isSubmitting: Boolean,
     onSelect: (String) -> Unit = {},
     submitted: Boolean,
     onSubmit: (String) -> Unit = {},
     onNextQuestionClick: () -> Unit = {},
     userSelectedChoiceID: String? = null, // only for review mode
+    correctChoiceID: String? = null, // correct choice ID from server
     modifier: Modifier = Modifier
 ) {
 
@@ -234,6 +259,7 @@ fun QuestionCard(
                 choice = it,
                 isSelected = isChoiceSelected,
                 submitted = submitted,
+                correctChoiceID = correctChoiceID,
                 onSelect = {
                     if (mode == AnswerMode.ANSWER && !submitted) {
                         onSelect(it.id)
@@ -247,13 +273,13 @@ fun QuestionCard(
         if (mode == AnswerMode.ANSWER) {
             Button(
                 onClick = {
-                    if (selectedChoiceID != null && !submitted) {
+                    if (!submitted && selectedChoiceID != null && !isSubmitting) {
                         onSubmit(selectedChoiceID)
-                    } else if (submitted) {
+                    } else if (submitted && !isSubmitting) {
                         onNextQuestionClick()
                     }
                 },
-                enabled = selectedChoiceID != null,
+                enabled = ((!submitted && selectedChoiceID != null) || submitted) && !isSubmitting,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
@@ -261,16 +287,35 @@ fun QuestionCard(
                 colors = ButtonDefaults.customPrimaryButtonColors(),
                 shape = RoundedCornerShape(15.dp)
             ) {
-                val buttonText = if (submitted) {
-                    if (isLastQuestion) "終了" else "次の質問へ"
+                if (isSubmitting) {
+                    Row(
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "送信中...",
+                            style = CustomTypography.header.copy(fontSize = 18.sp),
+                            color = Color.White
+                        )
+                    }
                 } else {
-                    "回答を送信"
+                    val buttonText = if (submitted) {
+                        if (isLastQuestion) "終了" else "次の質問へ"
+                    } else {
+                        "回答を送信"
+                    }
+                    Text(
+                        text = buttonText,
+                        style = CustomTypography.header.copy(fontSize = 18.sp),
+                        color = Color.White
+                    )
                 }
-                Text(
-                    text = buttonText,
-                    style = CustomTypography.header.copy(fontSize = 18.sp),
-                    color = Color.White
-                )
             }
         }
     }
@@ -282,15 +327,25 @@ fun ChoiceButton(
     choice: Choice,
     isSelected: Boolean,
     submitted: Boolean,
+    correctChoiceID: String? = null,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isCorrect = correctChoiceID != null && choice.id == correctChoiceID
+
     val backgroundColor = when {
+        submitted && isCorrect -> MyAppTheme.colors.secAccent.copy(alpha = 0.2f)
+        submitted && isSelected && !isCorrect -> Color.Red.copy(alpha = 0.2f)
         isSelected -> MyAppTheme.colors.blue.copy(alpha = 0.2f)
         else -> Color.Gray.copy(alpha = 0.1f)
     }
 
-    val borderColor = if (isSelected) MyAppTheme.colors.blue else Color.Transparent
+    val borderColor = when {
+        submitted && isCorrect -> MyAppTheme.colors.secAccent
+        submitted && isSelected && !isCorrect -> Color.Red
+        isSelected -> MyAppTheme.colors.blue
+        else -> Color.Transparent
+    }
 
     Surface(
         onClick = onSelect,
@@ -311,7 +366,7 @@ fun ChoiceButton(
             )
 
             when {
-                submitted && choice.isCorrect -> {
+                submitted && isCorrect -> {
                     Icon(
                         modifier = Modifier.size(19.dp),
                         imageVector = Icons.Default.CheckCircle,
@@ -320,7 +375,7 @@ fun ChoiceButton(
                     )
                 }
 
-                submitted && isSelected -> {
+                submitted && isSelected && !isCorrect -> {
                     Icon(
                         modifier = Modifier.size(19.dp),
                         imageVector = Icons.Default.Cancel,

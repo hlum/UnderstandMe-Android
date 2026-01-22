@@ -34,23 +34,19 @@ data class QuestionWithChoices(
                 choices = listOf(
                     Choice(
                         id = "choice-1",
-                        choiceText = "Berlin",
-                        isCorrect = false
+                        choiceText = "Berlin"
                     ),
                     Choice(
                         id = "choice-2",
-                        choiceText = "Madrid",
-                        isCorrect = false
+                        choiceText = "Madrid"
                     ),
                     Choice(
                         id = "choice-3",
-                        choiceText = "Paris",
-                        isCorrect = true
+                        choiceText = "Paris"
                     ),
                     Choice(
                         id = "choice-4",
-                        choiceText = "Rome",
-                        isCorrect = false
+                        choiceText = "Rome"
                     )
                 ),
                 createdAt = "2024-01-01T12:00:00Z"
@@ -65,16 +61,13 @@ data class Choice(
     @SerialName("choice_id")
     val id: String,
     @SerialName("choice_text")
-    val choiceText: String,
-    @SerialName("is_correct")
-    val isCorrect: Boolean
+    val choiceText: String
 ) {
     companion object {
         fun getDummy(): Choice {
             return Choice(
                 id = "choice-1234",
-                choiceText = "Dummy Choice Text",
-                isCorrect = false
+                choiceText = "Dummy Choice Text"
             )
         }
     }

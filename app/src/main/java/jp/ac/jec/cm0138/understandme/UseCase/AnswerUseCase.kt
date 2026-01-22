@@ -15,8 +15,8 @@ class AnswerUseCase @Inject constructor(
         userID: String,
         selectedChoiceID: String?,
         totalQuestion: Int
-    ) {
-            answerRepository.postAnswers(
+    ): String? {
+            return answerRepository.postAnswers(
                 questionID = questionID,
                 homeworkID = homeworkID,
                 userID = userID,

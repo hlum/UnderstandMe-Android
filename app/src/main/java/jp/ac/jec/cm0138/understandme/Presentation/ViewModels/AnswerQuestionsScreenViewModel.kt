@@ -3,6 +3,7 @@ package jp.ac.jec.cm0138.understandme.Presentation.ViewModels
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,12 +35,25 @@ class AnswerQuestionsScreenViewModel @Inject constructor(
     var currentQuestionIndex by  mutableStateOf(0)
         private set
 
+    var selectedChoiceID by mutableStateOf<String?>(null)
+
+
     var showSubmitErrorAlert by mutableStateOf(false)
         private set
 
     var isLoading by mutableStateOf(false)
         private set
 
+    var isSubmittingAnswer by mutableStateOf(false)
+        private set
+
+    var correctChoiceID by mutableStateOf<String?>(null)
+        private set
+
+    var timerRunning by mutableStateOf(true)
+        private set
+
+    var submitted by mutableStateOf(false)
 
     fun loadQuestions(homeworkID: String) {
         if (isLoading) return
@@ -73,27 +87,31 @@ class AnswerQuestionsScreenViewModel @Inject constructor(
         homeworkID: String,
         selectedChoiceID: String?
     ) {
-        if (isLoading) return
+        if (isSubmittingAnswer) return
 
         viewModelScope.launch {
             val totalQuestionCount = questionsWithChoices.size
-            isLoading = true
+            timerRunning = false // Stop timers
+            isSubmittingAnswer = true
 
             val currentUser = authRepository.getCurrentUser()
             withContext(Dispatchers.Default) {
                 try {
-                    answerUseCase.submitAnswer(
+                    val correctID = answerUseCase.submitAnswer(
                         questionID = questionID,
                         homeworkID = homeworkID,
                         userID = currentUser.uid,
                         selectedChoiceID = selectedChoiceID,
                         totalQuestion = totalQuestionCount
                     )
+                    correctChoiceID = correctID
+                    submitted = true
                 } catch (e: Exception) {
                     Log.e(TAG, "Error submitting answer: ${e.message}")
                     showSubmitErrorAlert = true
+                    timerRunning = true // Resume timer on error
                 } finally {
-                    isLoading = false
+                    isSubmittingAnswer = false
                 }
             }
         }
@@ -104,7 +122,20 @@ class AnswerQuestionsScreenViewModel @Inject constructor(
         if (currentQuestionIndex >= questionsWithChoices.size - 1) {
             navController.popBackStack()
         } else {
+            resetForNextQuestion()
             currentQuestionIndex++
         }
+    }
+
+    fun resetForNextQuestion() {
+        submitted = false
+        isSubmittingAnswer = false
+        correctChoiceID = null
+        selectedChoiceID = null
+        timerRunning = true
+    }
+
+    fun dismissErrorAlert() {
+        showSubmitErrorAlert = false
     }
 }

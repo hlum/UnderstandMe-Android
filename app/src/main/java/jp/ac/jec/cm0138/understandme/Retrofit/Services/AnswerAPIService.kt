@@ -2,6 +2,7 @@ package jp.ac.jec.cm0138.understandme.Retrofit.Services
 
 import jp.ac.jec.cm0138.understandme.Entity.APIResponse
 import jp.ac.jec.cm0138.understandme.Entity.Answer
+import jp.ac.jec.cm0138.understandme.Entity.PostAnswerResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.Response
@@ -23,7 +24,7 @@ interface AnswerAPIService {
     @POST("answer/add_answer.php")
     suspend fun submitAnswer(
         @Body request: SubmitAnswerRequest
-    ): Response<APIResponse<Unit>>
+    ): Response<APIResponse<List<PostAnswerResponse>>>
 
 
     @GET("answer/get_answers_with_homeworkID.php")

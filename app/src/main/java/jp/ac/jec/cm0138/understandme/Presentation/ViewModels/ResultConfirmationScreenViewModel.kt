@@ -11,6 +11,7 @@ import jakarta.inject.Inject
 import jp.ac.jec.cm0138.understandme.Entity.QuestionWithChoices
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.UseCase.AnswerUseCase
+import jp.ac.jec.cm0138.understandme.UseCase.ChoiceUseCase
 import jp.ac.jec.cm0138.understandme.UseCase.QuestionWithChoicesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +27,8 @@ data class UserAnswerAndQuestionID(
 class ResultConfirmationScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val questionWithChoicesUseCase: QuestionWithChoicesUseCase,
-    private val answerUseCase: AnswerUseCase
+    private val answerUseCase: AnswerUseCase,
+    private val choiceUseCase: ChoiceUseCase
 ) : ViewModel() {
     val TAG = "ResultConfirmationVM"
 
@@ -34,6 +36,9 @@ class ResultConfirmationScreenViewModel @Inject constructor(
         private set
 
     var userAnswers by mutableStateOf<List<UserAnswerAndQuestionID>>(emptyList())
+        private set
+
+    var correctChoiceIDs by mutableStateOf<Map<String, String>>(emptyMap())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -67,12 +72,39 @@ class ResultConfirmationScreenViewModel @Inject constructor(
                 }
 
                 userAnswers = userAnswerAndQuestionID
+
+                // Load correct choices for all questions
+                loadCorrectChoices(homeworkID)
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading answers: ${e.message}")
             } finally {
                 isLoading = false
             }
 
+        }
+    }
+
+    private suspend fun loadCorrectChoices(homeworkID: String) {
+        try {
+            val correctChoices = mutableMapOf<String, String>()
+
+            withContext(Dispatchers.IO) {
+                questionsWithChoices.forEach { question ->
+                    try {
+                        val choice = choiceUseCase.fetchCorrectChoice(
+                            questionID = question.id,
+                            homeworkID = homeworkID
+                        )
+                        correctChoices[question.id] = choice.id
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error loading correct choice for question ${question.id}: ${e.message}")
+                    }
+                }
+            }
+
+            correctChoiceIDs = correctChoices
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading correct choices: ${e.message}")
         }
     }
 
