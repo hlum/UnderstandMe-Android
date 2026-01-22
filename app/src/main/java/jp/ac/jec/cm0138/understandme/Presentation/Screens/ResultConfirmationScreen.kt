@@ -68,6 +68,8 @@ fun ResultConfirmationScreen(
                     mode = AnswerMode.REVIEW,
                     userSelectedChoiceID = it.userChoiceID,
                     submitted = true,
+                    correctChoiceID = viewModel.correctChoiceIDs[it.questionsAndChoices.id],
+                    isSubmitting = false,
                     modifier = Modifier.padding(10.dp)
                 )
             }

@@ -17,7 +17,7 @@ class LollipopAnswerRepository @Inject constructor(
         userID: String,
         selectedChoiceID: String?,
         totalQuestion: Int
-    ) {
+    ): String? {
         val request = SubmitAnswerRequest(
             questionID = questionID,
             homeworkID = homeworkID,
@@ -27,7 +27,8 @@ class LollipopAnswerRepository @Inject constructor(
         )
 
         val response = answerAPIService.submitAnswer(request)
-        LollipopAPIHelper.handleAPIResponse(response)
+        val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
+        return apiResponse.data?.firstOrNull()?.correctChoiceID
     }
 
     override suspend fun fetchAnswers(

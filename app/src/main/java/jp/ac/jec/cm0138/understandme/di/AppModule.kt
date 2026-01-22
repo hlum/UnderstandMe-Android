@@ -12,6 +12,7 @@ import jp.ac.jec.cm0138.understandme.LollipopResultRepository.Impl.LollipopResul
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AnswerRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AuthRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.AverageScoreRepository
+import jp.ac.jec.cm0138.understandme.Repository.Abstract.ChoiceRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.FCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.HomeworkRepository
@@ -22,6 +23,7 @@ import jp.ac.jec.cm0138.understandme.Repository.Abstract.UserDataRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.FirebaseAuthenticationRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAnswerRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopAverageScoreRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopChoiceRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopClassRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopFCMTokenRepository
 import jp.ac.jec.cm0138.understandme.Repository.Impl.LollipopHomeworkRepository
@@ -32,6 +34,7 @@ import jp.ac.jec.cm0138.understandme.Retrofit.APIKeyInterceptor
 import jp.ac.jec.cm0138.understandme.Retrofit.BaseUrlInterceptor
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AnswerAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AverageScoreAPIService
+import jp.ac.jec.cm0138.understandme.Retrofit.Services.ChoiceAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.FCMTokenAPIService
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.HomeworkAPIService
@@ -118,6 +121,14 @@ object AppModule {
         return LollipopAnswerRepository(answerAPIService = answerAPIService)
     }
 
+    @Provides
+    @Singleton
+    fun provideLollipopChoiceRepository(
+        choiceAPIService: ChoiceAPIService
+    ): ChoiceRepository {
+        return LollipopChoiceRepository(choiceAPIService = choiceAPIService)
+    }
+
 
     @Provides
     @Singleton
@@ -193,6 +204,14 @@ object AppModule {
         retrofit: Retrofit
     ): AnswerAPIService {
         return retrofit.create(AnswerAPIService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChoiceAPIService(
+        retrofit: Retrofit
+    ): ChoiceAPIService {
+        return retrofit.create(ChoiceAPIService::class.java)
     }
 
     @Provides

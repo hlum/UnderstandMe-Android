@@ -26,3 +26,9 @@ data class Answer(
         }
     }
 }
+
+@Serializable
+data class PostAnswerResponse(
+    @SerialName("correct_choice_id")
+    val correctChoiceID: String?
+)

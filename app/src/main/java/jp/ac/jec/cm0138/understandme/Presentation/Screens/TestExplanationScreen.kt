@@ -345,6 +345,7 @@ private fun StepArcTimer() {
                     size = 80.dp,
                     strokeWidth = 10.dp,
                     label = "PUSH",
+                    timerRunning = true,
                     accentColor = Color(0xFF2196F3),
                     warningColor = Color.Red,
                     onComplete = null
@@ -405,6 +406,7 @@ private fun StepArcTimerAction() {
                     label = "PUSH",
                     accentColor = Color(0xFF2196F3),
                     warningColor = Color.Red,
+                    timerRunning = true,
                     onComplete = {}
                 )
             }
