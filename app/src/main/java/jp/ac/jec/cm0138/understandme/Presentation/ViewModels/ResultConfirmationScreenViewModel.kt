@@ -123,8 +123,6 @@ class ResultConfirmationScreenViewModel @Inject constructor(
         } catch (e: Exception) {
             // TODO: Handle error appropriately
             Log.e(TAG, "Error loading questions: ${e.message}")
-        } finally {
-            isLoading = false
         }
     }
 }
