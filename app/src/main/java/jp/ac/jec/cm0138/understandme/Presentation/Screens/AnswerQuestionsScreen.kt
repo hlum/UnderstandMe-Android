@@ -324,26 +324,28 @@ fun QuestionCard(
 
 @Composable
 fun ChoiceButton(
+    modifier: Modifier = Modifier,
     choice: Choice,
     isSelected: Boolean,
     submitted: Boolean,
     correctChoiceID: String? = null,
-    onSelect: () -> Unit,
-    modifier: Modifier = Modifier
+    onSelect: () -> Unit
 ) {
     val isCorrect = correctChoiceID != null && choice.id == correctChoiceID
 
+    // Background: Only show color when selected (not based on correctness)
     val backgroundColor = when {
-        submitted && isCorrect -> MyAppTheme.colors.secAccent.copy(alpha = 0.2f)
-        submitted && isSelected && !isCorrect -> Color.Red.copy(alpha = 0.2f)
-        isSelected -> MyAppTheme.colors.blue.copy(alpha = 0.2f)
+        isSelected && submitted && isCorrect -> MyAppTheme.colors.secAccent.copy(alpha = 0.2f)
+        isSelected && submitted && !isCorrect -> Color.Red.copy(alpha = 0.2f)
+        isSelected && !submitted -> MyAppTheme.colors.blue.copy(alpha = 0.2f)
         else -> Color.Gray.copy(alpha = 0.1f)
     }
 
+    // Border: Only show border when selected
     val borderColor = when {
-        submitted && isCorrect -> MyAppTheme.colors.secAccent
-        submitted && isSelected && !isCorrect -> Color.Red
-        isSelected -> MyAppTheme.colors.blue
+        isSelected && submitted && isCorrect -> MyAppTheme.colors.secAccent
+        isSelected && submitted && !isCorrect -> Color.Red
+        isSelected && !submitted -> MyAppTheme.colors.blue
         else -> Color.Transparent
     }
 
