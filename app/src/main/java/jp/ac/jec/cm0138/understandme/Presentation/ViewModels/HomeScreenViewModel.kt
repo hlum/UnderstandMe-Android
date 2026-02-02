@@ -65,14 +65,15 @@ fun logout() {
                 // Run heavy work OFF the main thread
                 val (user, classes, homeworksResult) = withContext(Dispatchers.IO) {
                     coroutineScope {
+                        registerUser()
+
                         val userDeferred = async { fetchCurrentUser() }
                         val classesDeferred = async { fetchClassList() }
                         val homeworksDeferred = async { fetchAndProcessHomeworks() }
-
                         Triple(
                             userDeferred.await(),
                             classesDeferred.await(),
-                            homeworksDeferred.await()
+                            homeworksDeferred.await(),
                         )
                     }
                 }
@@ -160,5 +161,77 @@ fun logout() {
                 }
             }
         }
+
+
+    // Register new user only
+    suspend fun registerUser() {
+        val user = authRepository.getCurrentUser()
+
+        val email = user.email
+        if(email == null) {
+            Log.e("LoginScreenViewModel", "registerUser: user.email が nullになってます。")
+            return
+        }
+
+
+        val (studentCode, className, admissionYear) =
+            extractStudentInfo(email)
+
+        // Get photoURL from Google provider
+        val googleProvider = user.providerData.find { it.providerId == "google.com" }
+        val photoURL = googleProvider?.photoUrl?.toString()
+
+        val userData = UserData(
+            id = user.uid,
+            name = user.displayName ?: email,
+            email = email,
+            studentCode = studentCode,
+            majorCode = className,
+            admissionYear = admissionYear,
+            photoURL = photoURL
+        )
+
+        try {
+            userDataUseCase.registerUserIfNotExists(userData)
+        } catch(e: Exception) {
+            Log.e("LoginScreenViewModel", "registerUser: ユーザーデータの登録に失敗しました。再試行します。", e)
+        }
+
+    }
+
+
+    // メールから学年と学科コードを取得する
+    // 学校メールでない場合はダミーを返す
+    fun extractStudentInfo(email: String): Triple<String, String, Int> {
+        // Example valid format: "24cm0138@jec.ac.jp"
+
+        val atIndex = email.indexOf("@")
+        if (atIndex == -1) {
+            return Triple("99zz", "zz", 99)
+        }
+
+        // Get part before "@"
+        val localPart = email.substring(0, atIndex)
+
+        if (localPart.length < 4) {
+            return Triple("99zz", "zz", 99)
+        }
+
+        val yearPart = localPart.take(2)
+        val admissionYear = yearPart.toIntOrNull()
+            ?: return Triple("99zz", "zz", 99)
+
+        val classPart = localPart.drop(2)
+        val className = classPart.takeWhile { it.isLetter() }
+
+        if (className.length != 2) {
+            return Triple("99zz", "zz", 99)
+        }
+
+        val studentCode = localPart
+
+        return Triple(studentCode, className, admissionYear)
+    }
+
 
 }

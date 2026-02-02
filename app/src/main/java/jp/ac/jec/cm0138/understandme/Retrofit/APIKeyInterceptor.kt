@@ -36,10 +36,8 @@ class APIKeyInterceptor(
                 val token = currentUser.getIdToken(false).await().token
                     ?: throw IllegalStateException("Failed to retrieve Firebase ID token")
 
-                Log.d("APIKeyInterceptor", "✅ Using Firebase ID token for authentication")
                 token
             } catch (e: Exception) {
-                Log.e("APIKeyInterceptor", "❌ Failed to get Firebase ID token: ${e.message}")
                 throw e
             }
         }
