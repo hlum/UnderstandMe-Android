@@ -3,6 +3,7 @@ package jp.ac.jec.cm0138.understandme.UseCase
 import android.util.Log
 import jp.ac.jec.cm0138.understandme.Entity.Class
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
+import jp.ac.jec.cm0138.understandme.Repository.Impl.ClassRepositoryError
 import javax.inject.Inject
 
 sealed class ClassUseCaseError(message: String) : Exception(message) {
@@ -52,6 +53,8 @@ class ClassUseCase @Inject constructor(
     ) {
         val classExists = try {
             fetchClassWithClassCode(classCode) != null
+        } catch (e: ClassRepositoryError.NotFound) {
+            throw ClassUseCaseError.InvalidClassCode()
         } catch (e: Exception) {
             Log.e(TAG, "学科コード検証中に学科取得失敗", e)
             throw ClassUseCaseError.UnknownError()

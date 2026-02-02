@@ -6,6 +6,13 @@ import jp.ac.jec.cm0138.understandme.Helper.LollipopAPIHelper
 import jp.ac.jec.cm0138.understandme.Repository.Abstract.ClassRepository
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.AddOptionalClassRequest
 import jp.ac.jec.cm0138.understandme.Retrofit.Services.ClassAPIService
+import jp.ac.jec.cm0138.understandme.UseCase.ClassUseCaseError
+
+
+sealed class ClassRepositoryError(message: String) : Exception(message) {
+    class NotFound : ClassRepositoryError("Class not found")
+}
+
 
 class LollipopClassRepository @Inject constructor(
     private val classAPIService: ClassAPIService
@@ -24,8 +31,11 @@ class LollipopClassRepository @Inject constructor(
         val response = classAPIService.fetchClassWithClassCode(classCode)
 
         val apiResponse = LollipopAPIHelper.handleAPIResponse(response)
+        if(apiResponse.data.isNullOrEmpty()) {
+            throw ClassRepositoryError.NotFound()
+        }
 
-        return apiResponse.data?.firstOrNull() ?: throw Exception("Class not found")
+        return apiResponse.data.first()
     }
 
 
