@@ -14,4 +14,7 @@ class TestUserDataRepository: UserDataRepository {
 
     override suspend fun updateFCMToken(userID: String, fcmToken: String) {
     }
+
+    override suspend fun deleteUserData(userID: String) {
+    }
 }

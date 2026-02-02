@@ -38,13 +38,14 @@ fun AppNavigation(
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
-
+                launchSingleTop = true
             }
         } else if (!isLogIn && currentRoute != LOGIN_ROUTE::class.qualifiedName) {
             navController.navigate(LOGIN_ROUTE) {
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
+                launchSingleTop = true
             }
         }
     }

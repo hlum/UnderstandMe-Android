@@ -54,4 +54,8 @@ class UserDataUseCase @Inject constructor(
         val deviceID = DeviceManager.getDeviceId(context)
         fcmTokenRepository.deleteFcmToken(userID = userID, deviceID = deviceID)
     }
+
+    suspend fun deleteUserData(userID: String) {
+        userDataRepository.deleteUserData(userID)
+    }
 }

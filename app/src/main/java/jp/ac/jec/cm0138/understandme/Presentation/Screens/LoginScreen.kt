@@ -1,6 +1,7 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -62,6 +63,12 @@ fun LoginScreen(
     val loginUIState by viewModel.loginUiState.collectAsState()
 
     val activity = LocalContext.current
+
+
+    BackHandler(enabled = true) {
+        // do nothing
+    }
+
 
     LaunchedEffect(loginUIState.authState) {
         when (loginUIState.authState) {
@@ -190,19 +197,6 @@ fun LoginScreen(
 }
 
 
-class PreviewUserDataRepository() : UserDataRepository {
-    override suspend fun saveUserData(userData: UserData) {
-        return
-    }
-
-    override suspend fun fetchUserData(userID: String): UserData {
-        return UserData.getDummy()
-    }
-
-    override suspend fun updateFCMToken(userID: String, fcmToken: String) {
-        return
-    }
-}
 
 class PreviewFCMTokenRepository() : FCMTokenRepository {
     override suspend fun saveOrUpdateToken(userID: String, deviceID: String, deviceType: String, fcmToken: String) {
@@ -211,26 +205,5 @@ class PreviewFCMTokenRepository() : FCMTokenRepository {
 
     override suspend fun deleteFcmToken(userID: String, deviceID: String) {
         return
-    }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    val navController = rememberNavController()
-
-    Scaffold { innerpadding ->
-        LoginScreen(
-            modifier = Modifier.padding(innerpadding), viewModel = LoginScreenViewModel(
-                authenticationRepository = TestAuthRepository(),
-                userDataUseCase = UserDataUseCase(
-                    userDataRepository = PreviewUserDataRepository(),
-                    fcmTokenRepository = PreviewFCMTokenRepository()
-                )
-            ), onShowSnackbar = { message -> }, navController = navController
-        )
-
-
     }
 }

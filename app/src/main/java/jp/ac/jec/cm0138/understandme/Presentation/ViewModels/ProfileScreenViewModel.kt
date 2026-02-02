@@ -165,5 +165,22 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
+    fun deleteAccount(context: Context) {
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                val currentUser = authRepository.getCurrentUser()
+
+                withContext(Dispatchers.IO) {
+                    userDataUseCase.deleteUserData(currentUser.uid)
+                    authRepository.logOut()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting account: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
 }

@@ -9,5 +9,7 @@ interface UserDataRepository {
     suspend fun fetchUserData(userID: String): UserData
 
     suspend fun updateFCMToken(userID: String, fcmToken: String)
+
+    suspend fun deleteUserData(userID: String)
 }
 

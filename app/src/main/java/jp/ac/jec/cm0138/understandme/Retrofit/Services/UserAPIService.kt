@@ -4,6 +4,7 @@ import jp.ac.jec.cm0138.understandme.Entity.APIResponse
 import jp.ac.jec.cm0138.understandme.Entity.UserData
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -30,5 +31,9 @@ interface UserAPIService {
         @Field("fcm_token") fcmToken: String
     ): Response<APIResponse<Unit>>
 
+    @DELETE("user/delete_user.php")
+    suspend fun deleteUser(
+        @Query("id") userID: String
+    ): Response<APIResponse<Unit>>
 
 }

@@ -56,12 +56,10 @@ class LoginScreenViewModel @Inject constructor(
             val authResult = authenticationRepository.signInWithGoogle(context)
             
             if (authResult == AuthResult.Success) {
-                viewModelScope.launch(Dispatchers.IO) {
                     registerUser()
-                }
+                    updateAuthState(AuthState.fromAuthResult(authResult))
             }
 
-            updateAuthState(AuthState.fromAuthResult(authResult))
         }
     }
 

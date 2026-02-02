@@ -30,4 +30,10 @@ class LollipopUserDataRepository @Inject constructor (
 
         LollipopAPIHelper.handleAPIResponse(response)
     }
+
+    override suspend fun deleteUserData(userID: String) {
+        val response = api.deleteUser(userID)
+
+        LollipopAPIHelper.handleAPIResponse(response)
+    }
 }
