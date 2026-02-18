@@ -1,4 +1,5 @@
 package jp.ac.jec.cm0138.understandme.Presentation.Navigation
+import androidx.annotation.Keep
 import jp.ac.jec.cm0138.understandme.R
 import kotlinx.serialization.Serializable
 
@@ -49,6 +50,7 @@ data class RESULT_CONFIRMATION_ROUTE(
 @Serializable
 data object DETAIL_STATS_ROUTE
 
+@Keep
 enum class AnswerMode {
     ANSWER,
     REVIEW

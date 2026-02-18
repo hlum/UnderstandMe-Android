@@ -23,3 +23,7 @@ app/google-services.json
 app/secrets.properties
 
 secrets.properties
+
+*.aab
+
+*.apk
