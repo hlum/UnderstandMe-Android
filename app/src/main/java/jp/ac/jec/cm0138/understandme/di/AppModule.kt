@@ -274,4 +274,12 @@ object AppModule {
         return FirebaseAuth.getInstance()
     }
 
+    @Provides
+    @Singleton
+    fun provideBaseUrlInterceptor(
+        remoteConfigManager: RemoteConfigManager
+    ): BaseUrlInterceptor {
+        return BaseUrlInterceptor(remoteConfigManager)
+    }
+
 }

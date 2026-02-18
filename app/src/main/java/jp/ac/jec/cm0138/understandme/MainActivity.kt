@@ -44,7 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.ANSWER_QUESTIONS_ROUTE
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.AppNavigation
 import jp.ac.jec.cm0138.understandme.Presentation.Navigation.HOMEWORK_DETAIL_ROUTE
@@ -106,11 +106,13 @@ class MainActivity : ComponentActivity() {
             val isLogIn  by authStateManager.isLogIn.collectAsStateWithLifecycle()
 
             LaunchedEffect(homeworkIdToNavigate, isLogIn) {
-                if (isLogIn && homeworkIdToNavigate != null) {
-                    navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = homeworkIdToNavigate!!)) {
-                        launchSingleTop = true
+                homeworkIdToNavigate?.let { hwId ->
+                    if (isLogIn) {
+                        navController.navigate(HOMEWORK_DETAIL_ROUTE(homeworkID = hwId)) {
+                            launchSingleTop = true
+                        }
+                        _pendingHomeworkId.value = null
                     }
-                    _pendingHomeworkId.value = null
                 }
             }
 
